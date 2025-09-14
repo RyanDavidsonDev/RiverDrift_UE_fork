@@ -46,6 +46,10 @@ public:
 	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Landmarks")
 	TObjectPtr<ARDSpawnableLandmark> Landmark;
 
+	UPROPERTY(BlueprintReadOnly, VisibleAnywhere, Category = "Landmarks")
+	TSet<ARDSpawnableLandmark*> PotentialLandmarks;
+
+
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Tiles")

@@ -418,10 +418,13 @@ void ATileManager::UpgradeTile(FTileData format , ASpawnableTile* tile)
 			//if there's only one, then we can just finalize it immediately.
 			PotentialLandmarks[0]->SetIsPotential(false);
 			
+
+
 			//ARDSpawnableLandmark* landmark = GetWorld()->SpawnActor<ARDSpawnableLandmark>(DefaultSpawnableLandmarkBP);
 			//landmark->InitializeLandmark(PotentialLandmarks[0]);
 			//landmark->InitializeLandmark()
-			
+			UE_LOGFMT(LogTemp, Log, "setting one landmark");
+
 		}
 		else {
 			UE_LOGFMT(LogTemp, Error, "there are multiple potential landmarks but we don't know which one to spawn;");
@@ -435,62 +438,75 @@ TArray<ARDSpawnableLandmark*> ATileManager::SpawnPotentialLandmarks(ASpawnableTi
 {
 	//TMap<FName*, FLandmarkData*> ValidLandmarks;
 	TArray<ARDSpawnableLandmark*> ValidLandmarks;
+
+
+	//for each neighbor 
 	for (int i = 0; i < tile->Neighbors.Num(); i++) {
-		//set our key the tile type of {our tile, neighbors at i, neighbors at i+1
-		TArray<ETileType> keyCheck = {
-			tile->TileType.ETileType,
-			tile->Neighbors[i]->TileType.ETileType,
-			tile->Neighbors[(i + 1) % tile->Neighbors.Num()]->TileType.ETileType };//modulo operation for when we loop back around
+		const int iplus1 = (i + 1) % tile->Neighbors.Num(); //uses modulo operation to wrap array back to start when at end. setting as var for readability
 
-		
-		if (!IsValid(LandmarkDataTable)) {
-			UE_LOGFMT(LogTemp, Fatal, "LandmarkDataTable not valid");
-		}
-		//if (LandmarkHashMap == nullptr) {
-		//	UE_LOGFMT(LogTemp, Fatal, "LandmarkHashMap not valid");
-		//}
-		//if (!IsValid(LandmarkDataTable)) {
-		//	UE_LOGFMT(LogTemp, Fatal, "LandmarkDataTable not valid");
-		//}
-		FName* RowName = LandmarkHashMap.Find(keyCheck);
+		//before checking the two tiles, make sure they're not already part of another confirmed landmark
+		if ((tile->Neighbors[i]->Landmark == nullptr) && (tile->Neighbors[iplus1]->Landmark == nullptr ) ){
+		//depending on any later changes made to how the landmark ref gets set, the above logic may need to also check whether the landmark is set AND IS NOT only potential
+		//^that's not necessary right this moment as we only set them when they become confirmed, but if that changes the above logic also needs to be updated
 
-		if (RowName != nullptr) {//we found a match
+			//look up the current key in the landmark data table
 
-			FLandmarkData* data = LookupTableByName<FLandmarkData>(LandmarkDataTable, *RowName, "in tileMan.spawnTile(), checking whether the tiles exist in the hashmap");
-			UE_LOGFMT(LogTemp, Log, "we found a match! landmark name is {0}, data is {1}", RowName->ToString(), data->Sprite->GetName());
+			//set our key the tile type of {our tile, neighbors at i, neighbors at i+1
+			TArray<ETileType> keyCheck = {
+				tile->TileType.ETileType,
+				tile->Neighbors[i]->TileType.ETileType,
+				tile->Neighbors[iplus1]->TileType.ETileType };//modulo operation for when we loop back around
 
-			ARDSpawnableLandmark* PotLandmark = GetWorld()->SpawnActor<ARDSpawnableLandmark>(DefaultSpawnableLandmarkBP);
+			if (!IsValid(LandmarkDataTable)) {
+				UE_LOGFMT(LogTemp, Fatal, "LandmarkDataTable not valid");
+			}
+			FName* RowName = LandmarkHashMap.Find(keyCheck);
 
-			TArray<ASpawnableTile*> tiles = { tile, tile->Neighbors[i], tile->Neighbors[(i + 1) % tile->Neighbors.Num()]};
-		
-			if (data == nullptr) {
-				UE_LOGFMT(LogTemp, Fatal, "yikes");
+
+
+			if (RowName != nullptr) {//we found a match
+
+				FLandmarkData* data = LookupTableByName<FLandmarkData>(LandmarkDataTable, *RowName, "in tileMan.spawnTile(), checking whether the tiles exist in the hashmap");
+				UE_LOGFMT(LogTemp, Log, "we found a match! landmark name is {0}, data is {1}", RowName->ToString(), data->Sprite->GetName());
+
+				ARDSpawnableLandmark* PotLandmark = GetWorld()->SpawnActor<ARDSpawnableLandmark>(DefaultSpawnableLandmarkBP);
+
+				TArray<ASpawnableTile*> tiles = { tile, tile->Neighbors[i], tile->Neighbors[iplus1] };
+
+				if (data == nullptr) {
+					UE_LOGFMT(LogTemp, Fatal, "unable to find row in LandmarkDataTable given rowName {0}", *RowName->ToString());
+
+				}
+				if (&tiles == NULL) {
+					UE_LOGFMT(LogTemp, Fatal, "unable to initialize an array of {tile, tile.neighbors[i], and t.n[i+1]} array's ptr was null");
+
+				}
+				PotLandmark->InitializeLandmark(tiles, *data);
+
+
+				//PotLandmark->ComposingTiles = tiles;
+				//UE_LOGFMT(LogTemp, Fatal, "2");
+				//PotLandmark->LandmarkData = *data;
+				////UE_LOGFMT(LogTemp, Fatal, "3");
+
+				//PotLandmark->Sprite->SetSprite(data->Sprite);
+
+				////UE_LOGFMT(LogTemp, Fatal, "4");
+				ValidLandmarks.Add(PotLandmark);
+				tile->PotentialLandmarks.Add(PotLandmark);
+
+				//ValidLandmarks.Add(RowName, data);
 
 			}
-			if (&tiles == NULL) {
-				UE_LOGFMT(LogTemp, Fatal, "yikes");
+			else {
+				UE_LOGFMT(LogTemp, Log, "nope");
 
 			}
-			PotLandmark->InitializeLandmark(tiles, *data);
-
-
-			//PotLandmark->ComposingTiles = tiles;
-			//UE_LOGFMT(LogTemp, Fatal, "2");
-			//PotLandmark->LandmarkData = *data;
-			////UE_LOGFMT(LogTemp, Fatal, "3");
-
-			//PotLandmark->Sprite->SetSprite(data->Sprite);
-
-			////UE_LOGFMT(LogTemp, Fatal, "4");
-			ValidLandmarks.Add(PotLandmark);
-			
-			//ValidLandmarks.Add(RowName, data);
-
+		
 		}
-		else {
-			UE_LOGFMT(LogTemp, Log, "nope");
 
-		}
+
+		
 	}
 	UE_LOGFMT(LogTemp, Log, "we found {0} valid landmarks that can be placed", ValidLandmarks.Num());
 

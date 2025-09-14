@@ -21,6 +21,7 @@ enum class ETileType : uint8
 	TE_Mountain UMETA(DisplayName = "mountain"),
 	TE_Town UMETA(DisplayName = "town"),
 	TE_Mystery UMETA(DisplayName = "mystery"),
+	TE_Beach UMETA(DisplayName = "beach"),
 };
 
 USTRUCT()

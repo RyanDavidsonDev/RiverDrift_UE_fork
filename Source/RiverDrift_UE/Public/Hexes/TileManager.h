@@ -60,8 +60,6 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ASpawnableTile> DefaultSpawnableTileBP;
 
-	//UPROPERTY(EditDefaultsOnly)
-	//TSubclassOf<ARDPotentialLandmark> DefaultPotentialLandmarkBP;
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ARDSpawnableLandmark> DefaultSpawnableLandmarkBP;
 

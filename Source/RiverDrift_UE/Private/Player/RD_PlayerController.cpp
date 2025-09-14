@@ -7,6 +7,7 @@
 #include "Core/RD_GameMode.h"
 #include "Hexes/SpawnableTile.h"
 #include "Hexes/TileManager.h"
+#include "Hexes/RDSpawnableLandmark.h"
 #include "HexLibrary.h"
 #include "Logging/StructuredLog.h"
 #include "EnhancedInputComponent.h"
@@ -166,7 +167,20 @@ void ARD_PlayerController::OnSelectTileTriggered()
 			}
 		}
 		else {
-			UE_LOGFMT(LogTemp, Warning, "player tile raycast somehow returned an actor that isn't a tile. something is wrong with your collisions");
+
+			ARDSpawnableLandmark* Landmark;
+			Landmark = Cast<ARDSpawnableLandmark>(HitResult.GetActor());
+			if (IsValid(Landmark)) {
+				UE_LOGFMT(LogTemp, Log, "Player clicked a landmark, time to upgrade it");
+
+
+				Landmark->SetIsPotential(false);
+			}
+			else {
+				UE_LOGFMT(LogTemp, Warning, "player tile raycast somehow returned an actor that isn't a tile. something is wrong with your collisions");
+			}
+
+
 		}
 	}
 	else {
