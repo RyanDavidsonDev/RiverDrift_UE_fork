@@ -16,6 +16,7 @@ struct FRDDialogueResponseOption
 	GENERATED_BODY()
 public:
 	FRDDialogueResponseOption();
+	FRDDialogueResponseOption(FText _ButtonText);
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FText ButtonText;
