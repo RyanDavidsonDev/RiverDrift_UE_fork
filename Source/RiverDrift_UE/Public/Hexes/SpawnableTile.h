@@ -4,6 +4,7 @@
 #include "Engine/DataAsset.h"
 #include "TileData.h"
 #include "../HexLibrary.h"
+#include "RDSelectableInterface.h"
 #include "SpawnableTile.generated.h"
 
 class ATileManager;
@@ -17,7 +18,7 @@ struct FTileData;
 
 
 UCLASS()
-class ASpawnableTile : public AActor
+class ASpawnableTile : public AActor, public IRDSelectableInterface
 {
 
 	GENERATED_BODY()
@@ -50,18 +51,17 @@ public:
 	TSet<ARDSpawnableLandmark*> PotentialLandmarks;
 
 
-protected:
-
-	UPROPERTY(EditDefaultsOnly, Category="Tiles")
-	UMaterialInterface* DefaultMaterial;
-
-	UPROPERTY(EditDefaultsOnly, Category = "Tiles")
-	UMaterialInterface* HighlightedMaterial;
 
 	UMaterialInstanceDynamic* DynamicMaterial;
 
 	UMaterialInstanceDynamic* DefaultMaterialInstance;
 	UMaterialInstanceDynamic* HighlightedMaterialInstance;
+
+protected:
+
+	UPROPERTY(EditDefaultsOnly, Category="Tiles")
+	UMaterialInterface* DefaultMaterial;
+
 
 
 // --- FUNCS ---
@@ -81,8 +81,8 @@ public:
 	// Called every frame
 	virtual void Tick(float DeltaTime) override;
 
-	void SelectTile();
-	void DeselectTile();
+	virtual void SelectObject() override;
+	virtual void DeselectObject() override;
 
 protected:
 	// Called when the game starts or when spawned

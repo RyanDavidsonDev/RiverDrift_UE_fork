@@ -152,7 +152,7 @@ void ASpawnableTile::Tick(float DeltaTime)
 
 }
 
-void ASpawnableTile::SelectTile()
+void ASpawnableTile::SelectObject()
 {
 	UMaterialInterface* mat = BackgroundSpriteComponent->GetMaterial(0);
 
@@ -163,7 +163,7 @@ void ASpawnableTile::SelectTile()
 	UE_LOGFMT(LogTemp, Log, "select tile called in cpp, {0}", *mat->GetName());
 }
 
-void ASpawnableTile::DeselectTile()
+void ASpawnableTile::DeselectObject()
 {
 	BackgroundSpriteComponent->SetMaterial(0, DefaultMaterial );
 }

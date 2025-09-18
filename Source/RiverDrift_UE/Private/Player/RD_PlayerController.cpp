@@ -92,14 +92,14 @@ void ARD_PlayerController::SetupInputComponent()
 	if (UEnhancedInputComponent* EnhancedInputComponent = Cast<UEnhancedInputComponent>(InputComponent))
 	{
 		// Setup mouse input events
-		EnhancedInputComponent->BindAction(SelectTileClickAction, ETriggerEvent::Started, this, &ARD_PlayerController::OnInputStarted);
-		//EnhancedInputComponent->BindAction(SelectTileClickAction, ETriggerEvent::Triggered, this, &ARD_PlayerController::OnSelectTileTriggered);
+		EnhancedInputComponent->BindAction(SelectObjectClickAction, ETriggerEvent::Started, this, &ARD_PlayerController::OnInputStarted);
+		//EnhancedInputComponent->BindAction(SelectObjectClickAction, ETriggerEvent::Triggered, this, &ARD_PlayerController::OnSelectObjectTriggered);
 
 		// Setup touch input events
-		EnhancedInputComponent->BindAction(SelectTileTouchAction, ETriggerEvent::Started, this, &ARD_PlayerController::OnInputStarted);
-		EnhancedInputComponent->BindAction(SelectTileTouchAction, ETriggerEvent::Triggered, this, &ARD_PlayerController::OnTouchTriggered);
-		EnhancedInputComponent->BindAction(SelectTileTouchAction, ETriggerEvent::Completed, this, &ARD_PlayerController::OnTouchReleased);
-		EnhancedInputComponent->BindAction(SelectTileTouchAction, ETriggerEvent::Canceled, this, &ARD_PlayerController::OnTouchReleased);
+		EnhancedInputComponent->BindAction(SelectObjectTouchAction, ETriggerEvent::Started, this, &ARD_PlayerController::OnInputStarted);
+		EnhancedInputComponent->BindAction(SelectObjectTouchAction, ETriggerEvent::Triggered, this, &ARD_PlayerController::OnTouchTriggered);
+		EnhancedInputComponent->BindAction(SelectObjectTouchAction, ETriggerEvent::Completed, this, &ARD_PlayerController::OnTouchReleased);
+		EnhancedInputComponent->BindAction(SelectObjectTouchAction, ETriggerEvent::Canceled, this, &ARD_PlayerController::OnTouchReleased);
 		
 		EnhancedInputComponent->BindAction(OverrideWaterAction, ETriggerEvent::Started, this, &ARD_PlayerController::OnOverrideWaterTriggered);
 		EnhancedInputComponent->BindAction(OverrideWaterAction, ETriggerEvent::Completed, this, &ARD_PlayerController::OnOverrideWaterReleased);
@@ -116,10 +116,10 @@ void ARD_PlayerController::SetupInputComponent()
 
 void ARD_PlayerController::OnInputStarted()
 {
-	OnSelectTileTriggered();
+	OnSelectObjectTriggered();
 }
 
-void ARD_PlayerController::OnSelectTileTriggered()
+void ARD_PlayerController::OnSelectObjectTriggered()
 {
 
 	UE_LOGFMT(LogTemp, Log, "Player input detected");
@@ -154,15 +154,15 @@ void ARD_PlayerController::OnSelectTileTriggered()
 				}
 				else {
 					UE_LOGFMT(LogTemp, Log, "player has clicked a tile other than the currently selected tile. selecting that tile");
-					CurrentSelectedTile->DeselectTile();
+					CurrentSelectedTile->DeselectObject();
 					CurrentSelectedTile = tile;
-					tile->SelectTile();
+					tile->SelectObject();
 				}
 			}
 			else {
 				UE_LOGFMT(LogTemp, Log, "player has clicked a new tile for the very first time. selecting that tile");
 				CurrentSelectedTile = tile;
-				tile->SelectTile();
+				tile->SelectObject();
 
 			}
 		}
@@ -193,7 +193,7 @@ void ARD_PlayerController::OnSelectTileTriggered()
 void ARD_PlayerController::OnTouchTriggered()
 {
 	UE_LOGFMT(LogTemp, Log, "Player selected a tile through a screen touch rather than a click, do we need to do anything differently here?");
-	OnSelectTileTriggered();
+	OnSelectObjectTriggered();
 }
 
 void ARD_PlayerController::OnTouchReleased()
@@ -272,7 +272,7 @@ void ARD_PlayerController::ActivateTile()
 	}
 
 
-	CurrentSelectedTile->DeselectTile();
+	CurrentSelectedTile->DeselectObject();
 	CurrentSelectedTile = nullptr;
 
 }
