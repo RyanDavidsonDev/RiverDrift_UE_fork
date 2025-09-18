@@ -171,10 +171,10 @@ void ARD_PlayerController::OnSelectTileTriggered()
 			ARDSpawnableLandmark* Landmark;
 			Landmark = Cast<ARDSpawnableLandmark>(HitResult.GetActor());
 			if (IsValid(Landmark)) {
-				UE_LOGFMT(LogTemp, Log, "Player clicked a landmark, time to upgrade it");
+				Landmark->Interact();
 
 
-				Landmark->SetIsPotential(false);
+				//Landmark->SetIsPotential(false);
 			}
 			else {
 				UE_LOGFMT(LogTemp, Warning, "player tile raycast somehow returned an actor that isn't a tile. something is wrong with your collisions");

@@ -39,6 +39,19 @@ void ARDSpawnableLandmark::InitializeLandmark(TArray<ASpawnableTile*> _Composing
 	}
 }
 
+void ARDSpawnableLandmark::Interact_Implementation()
+{
+	if (bIsPotential) {
+		UE_LOGFMT(LogTemp, Log, "Player clicked a potential landmark, time to upgrade it");
+		SetIsPotential(false);
+		return;
+
+	} else {
+		UE_LOGFMT(LogTemp, Log, "Player clicked a solidified landmark, time to execute the other functionality");
+
+	}
+}
+
 void ARDSpawnableLandmark::SetIsPotential(bool b)
 {
 	if (!b) {

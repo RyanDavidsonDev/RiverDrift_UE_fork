@@ -49,6 +49,9 @@ public:
 
 	void InitializeLandmark(TArray<ASpawnableTile*> _ComposingTiles, FLandmarkData _LandmarkData, bool _bIsPotential = true);
 
+	UFUNCTION(BlueprintNativeEvent)
+	void Interact();
+
 	UFUNCTION(BlueprintGetter, Category="Landmarks")
 	bool GetIsPotential() const {return bIsPotential; } 
 	void SetIsPotential(bool b);

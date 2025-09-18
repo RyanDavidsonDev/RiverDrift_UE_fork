@@ -10,6 +10,7 @@
 
 class UPaperSprite;
 class ARDBillboardGroupBase;
+class UDA_RDDialogueScene;
 
 UENUM(BlueprintType)
 enum class ETileType : uint8
@@ -54,6 +55,7 @@ public:
 
 	float cellWidth = cellSize;
 	float cellHeight = cellSize;
+
 
 };
 
@@ -132,6 +134,9 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
 	UPaperSprite* Sprite;
 
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
+	UDA_RDDialogueScene* InteractionCutscene;
 
 };
 
