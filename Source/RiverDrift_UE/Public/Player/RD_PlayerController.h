@@ -15,7 +15,8 @@ class UInputAction;
 class ASpawnableTile;
 class ATileManager;
 class ARD_GameMode;
-class ARD_PlayerPawn;
+class ARD_PlayerPawn; 
+class URDSelectableInterface;
 
 /**
  * 
@@ -28,12 +29,12 @@ class RIVERDRIFT_UE_API ARD_PlayerController : public APlayerController
 	// --- VARIABLES ---
 
 public:
-
 	UPROPERTY(BlueprintReadOnly)
 	bool bOverrideWater;
 
+
 	UPROPERTY(VisibleInstanceOnly, BlueprintReadOnly, category = "Tiles")
-	ASpawnableTile* CurrentSelectedTile;
+	TOBjectPtr<U CurrentSelectedObject;
 
 	/** MappingContext */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -41,11 +42,11 @@ public:
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* SelectTileClickAction;
+	UInputAction* SelectObjectClickAction;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
-	UInputAction* SelectTileTouchAction;
+	UInputAction* SelectObjectTouchAction;
 
 	/** Jump Input Action */
 	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category = Input, meta = (AllowPrivateAccess = "true"))
@@ -70,7 +71,7 @@ public:
 	//UInputAction* SelectTileTouchAction;
 
 	UPROPERTY(visibleAnywhere)
-	TArray<TObjectPtr< ASpawnableTile>> TilesInRange;
+	TArray<TScriptInterface< IRDSelectableInterface>> ObjectsInRange;
 
 	// --- FUNCTIONS
 public:
@@ -94,7 +95,7 @@ protected:
 
 	/** Input handlers for SetDestination action. */
 	void OnInputStarted();
-	void OnSelectTileTriggered();
+	void OnSelectObjectTriggered();
 	void OnTouchTriggered();
 	void OnTouchReleased();
 
@@ -102,7 +103,7 @@ protected:
 	void OnOverrideWaterReleased();
 
 	UFUNCTION(BlueprintNativeEvent, BlueprintCallable )
-	bool CheckIfTileInRange(ASpawnableTile* tile);// only very basic (always true) c++ implementation, job for designers 
+	bool CheckIfObjectInRange(IRDSelectableInterface* object);// only very basic (always true) c++ implementation, job for designers 
 
 
 

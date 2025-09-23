@@ -52,17 +52,19 @@ public:
 
 
 
-	UMaterialInstanceDynamic* DynamicMaterial;
-
-	UMaterialInstanceDynamic* DefaultMaterialInstance;
-	UMaterialInstanceDynamic* HighlightedMaterialInstance;
-
 protected:
 
 	UPROPERTY(EditDefaultsOnly, Category="Tiles")
 	UMaterialInterface* DefaultMaterial;
 
 
+	UPROPERTY(EditDefaultsOnly, Category = "Tiles")
+	UMaterialInterface* HighlightedMaterial;
+
+	UMaterialInstanceDynamic* DynamicMaterial;
+
+	UMaterialInstanceDynamic* DefaultMaterialInstance;
+	UMaterialInstanceDynamic* HighlightedMaterialInstance;
 
 // --- FUNCS ---
 

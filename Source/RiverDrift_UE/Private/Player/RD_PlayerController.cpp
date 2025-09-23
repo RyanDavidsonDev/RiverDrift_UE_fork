@@ -130,13 +130,67 @@ void ARD_PlayerController::OnSelectObjectTriggered()
 	GetHitResultUnderCursorByChannel(traceChannel, false, HitResult);
 
 	if (HitResult.bBlockingHit) {
+		IRDSelectableInterface* Object;
 		ASpawnableTile* tile;
 
+		if (HitResult.GetActor()->Implements<IRDSelectableInterface>()) {
+			Object = Cast<IRDSelectableInterface>(HitResult.GetActor());
+
+			if (!CheckIfObjectInRange(Object)) {
+				UE_LOGFMT(LogTemp, Log, "player tried selecting a tile that they're not in range for. exiting");
+				return;
+			}
+
+			//TODO: check whether the tile is "in range" of player - will we still be using the interaction box?
+			if (IsValid(CurrentSelectedObject)) {
+				if (CurrentSelectedObject == Object) {
+					UE_LOGFMT(LogTemp, Log, "player has clicked current tile twice over. activating that tile");
+
+						ActivateTile();
+					}
+					else {
+						UE_LOGFMT(LogTemp, Log, "player has clicked a tile other than the currently selected tile. selecting that tile");
+						CurrentSelectedTile->DeselectObject();
+						CurrentSelectedTile = tile;
+						tile->SelectObject();
+					}
+				}
+				else {
+					UE_LOGFMT(LogTemp, Log, "player has clicked a new tile for the very first time. selecting that tile");
+					CurrentSelectedTile = tile;
+					tile->SelectObject();
+
+				}
+			}
+			else {
+
+				ARDSpawnableLandmark* Landmark;
+				Landmark = Cast<ARDSpawnableLandmark>(HitResult.GetActor());
+				if (IsValid(Landmark)) {
+					Landmark->Interact();
+
+
+					//Landmark->SetIsPotential(false);
+				}
+				else {
+					UE_LOGFMT(LogTemp, Warning, "player tile raycast somehow returned an actor that isn't a tile. something is wrong with your collisions");
+				}
+
+
+			}
+		}
+		else {
+			UE_LOGFMT(LogTemp, Log, "player has clicked into the void or somehow hit something that wasn't a tile. should we unset the currently selected tile?");
+
+		}
+		}
+
+		Object = Cast<URDSelectableInterface>(HitResult.GetActor());
 		tile = Cast<ASpawnableTile>(HitResult.GetActor());
 		if (IsValid(tile)) {//ensure that the actor we found was correctly cast to a tile - theoretically once I tweak trace channels this shouldn't ever return false, but I always cast on the side of caution
 			UE_LOGFMT(LogTemp, Log, "we got a hit, pos is {0} channel was {1}", tile->HexCoord.ToString(), ECollisionChannel::ECC_GameTraceChannel2);
 
-			if (!CheckIfTileInRange(tile)) {
+			if (!CheckIfObjectInRange(tile)) {
 				UE_LOGFMT(LogTemp, Log, "player tried selecting a tile that they're not in range for. exiting");
 				return;
 			}
@@ -219,15 +273,15 @@ void ARD_PlayerController::OnOverrideWaterReleased()
 	}
 }
 
-bool ARD_PlayerController::CheckIfTileInRange_Implementation(ASpawnableTile* tile)
+bool ARD_PlayerController::CheckIfObjectInRange_Implementation(IRDSelectableInterface* tile)
 {
-	return TilesInRange.Contains(tile);
+	return ObjectsInRange.Contains(tile);
 }
 
 
 void ARD_PlayerController::ActivateTile()
 {
-	if (!CheckIfTileInRange(CurrentSelectedTile)) {
+	if (!CheckIfObjectInRange(CurrentSelectedTile)) {
 		UE_LOGFMT(LogTemp, Log, "player tried activating a tile that they're not in range for. exiting");
 		return;
 	}

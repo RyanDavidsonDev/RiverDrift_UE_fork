@@ -7,7 +7,7 @@
 #include "RDSelectableInterface.generated.h"
 
 // This class does not need to be modified.
-UINTERFACE(MinimalAPI)
+UINTERFACE(MinimalAPI, BlueprintType)
 class URDSelectableInterface : public UInterface
 {
 	GENERATED_BODY()
@@ -28,11 +28,4 @@ public:
 
 protected:
 
-	//UPROPERTY(EditDefaultsOnly, Category = "Tiles")
-	//UMaterialInterface* HighlightedMaterial;
-
-	//UMaterialInstanceDynamic* DynamicMaterial;
-
-	//UMaterialInstanceDynamic* DefaultMaterialInstance;
-	//UMaterialInstanceDynamic* HighlightedMaterialInstance;
 };
