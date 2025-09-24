@@ -46,7 +46,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
 	bool bIsPlayerTraversible;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float cellSize = 256.0f;
 

@@ -1,0 +1,60 @@
+// Fill out your copyright notice in the Description page of Project Settings.
+
+#pragma once
+
+#include "CoreMinimal.h"
+#include "DataTableUtils.h"
+#include "Subsystems/WorldSubsystem.h"
+//#include "Enumerators/QuestEnums.h"
+#include "Quests/RDQuestline.h"
+#include "RDQuestManagerSubsystem.generated.h"
+
+//class URDQuestLine;
+
+UCLASS(Blueprintable)
+class RIVERDRIFT_UE_API URDQuestManagerSubsystem : public UWorldSubsystem
+{
+    GENERATED_BODY()
+
+    // --- Functions ---
+public:
+    URDQuestManagerSubsystem();
+
+    virtual void Initialize(FSubsystemCollectionBase& Collection) override;
+    virtual void Deinitialize() override;
+
+    
+protected:
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+    void InitializeSubsystem();
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+    void DeinitializeSubsystem();
+
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+    void StartQuestline(URDQuestLine* QuestLine);
+
+    //otherID follows conventions set by the progressionCondition struct. landmarks are the row name.
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+    void CheckProgression(EConditionType ConditionType, FName OtherID);
+    
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+    void ProgressQuestline(FName Questline);
+
+    // --- variables ---
+
+public:
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+    TArray<TObjectPtr<URDQuestLine>> ActiveQuestLines;
+
+
+
+protected:
+
+    //UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    //TMap < EConditionType, TMap<FName, TObjectPtr<URDQuestLine>>> ActiveConditions;
+
+    //UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    //U
+
+};
