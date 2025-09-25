@@ -15,6 +15,22 @@ UCLASS(Blueprintable)
 class RIVERDRIFT_UE_API URDQuestManagerSubsystem : public UWorldSubsystem
 {
     GENERATED_BODY()
+    // --- variables ---
+
+public:
+
+    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+    TArray<TObjectPtr<URDQuestLine>> ActiveQuestLines;
+
+
+
+protected:
+
+    //UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
+    TMap < EConditionType, TMap<FName, TObjectPtr<URDQuestLine>>> ActiveConditions;
+
+    //UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
+    //U
 
     // --- Functions ---
 public:
@@ -23,6 +39,8 @@ public:
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
     virtual void Deinitialize() override;
 
+    //UFUNCTION(BlueprintGetter)
+    //TMap < EConditionType, TMap<FName, TObjectPtr<URDQuestLine>>> GetActiveConditions() { return ActiveConditions; };
     
 protected:
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
@@ -40,21 +58,5 @@ protected:
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
     void ProgressQuestline(FName Questline);
 
-    // --- variables ---
-
-public:
-
-    UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-    TArray<TObjectPtr<URDQuestLine>> ActiveQuestLines;
-
-
-
-protected:
-
-    //UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    //TMap < EConditionType, TMap<FName, TObjectPtr<URDQuestLine>>> ActiveConditions;
-
-    //UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
-    //U
 
 };
