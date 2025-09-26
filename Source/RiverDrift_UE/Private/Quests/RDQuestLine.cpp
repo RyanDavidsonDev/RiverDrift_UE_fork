@@ -2,6 +2,7 @@
 
 
 #include "Quests/RDQuestLine.h"
+#include "Hexes/TileData.h"
 
 FRDProgressionCondition::FRDProgressionCondition()
 {
@@ -48,3 +49,14 @@ int URDQuestLine::GetCurrentQuestObjectiveIndex()
 {
 	return CurrentObjectiveIndex;
 }
+
+//FRDProgressionCondition_Landmark::FRDProgressionCondition_Landmark()
+//{
+//	//FRDProgressionCondition();
+//	ConditionType = EConditionType::CE_NewLandmark;
+//}
+//
+//virtual FGuid FRDProgressionCondition_Landmark::GetGuid() override {
+//	//Landmark
+//	return Landmark.
+//}

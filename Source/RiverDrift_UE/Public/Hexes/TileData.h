@@ -3,6 +3,7 @@
 #include "CoreMinimal.h"
 //#include "../HexLibrary.h"
 #include "RDBillboardGroupBase.h"
+#include "../../RiverDrift_UE.h"
 #include "TileData.generated.h"
 /**
  *
@@ -121,11 +122,18 @@ struct RIVERDRIFT_UE_API FLandmarkData : public FTableRowBase
 {
 	GENERATED_BODY()
 
+	FLandmarkData() {
+		//UE_LOG(QuestLog, Log, TEXT("constructor called"))
+		QuestID = FGuid::NewGuid();
+	};
 
 public:
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
 	FString Name;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tiles")
+	FGuid QuestID;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
 	FLandmarkKey Key;

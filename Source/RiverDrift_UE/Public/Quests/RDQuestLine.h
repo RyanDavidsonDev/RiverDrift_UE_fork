@@ -4,9 +4,11 @@
 
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
+#include "Hexes/TileData.h"
 #include "RDQuestLine.generated.h"
 
 class UDA_RDDialogueScene;
+//struct FLandmarkData;
 
 UENUM(BlueprintType)
 enum class EConditionType : uint8
@@ -23,6 +25,7 @@ struct  FRDProgressionCondition
 	GENERATED_BODY()
 public:
 	FRDProgressionCondition();
+	virtual ~FRDProgressionCondition() {} ;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	EConditionType ConditionType;
@@ -33,7 +36,31 @@ public:
 		//?? for dialogue
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	FName OtherID;
+	//FTableRowBase OtherObject;
+
+	//FGuid GetGuid();
 };
+
+//USTRUCT(BlueprintType)
+//struct  FRDProgressionCondition_Landmark : public FRDProgressionCondition
+//{
+//	GENERATED_BODY()
+//public:
+//	FRDProgressionCondition_Landmark();
+//
+//	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+//	//EConditionType ConditionType = EConditionType::CE_NewLandmark;
+//
+//	//A Unique ID/name passed from the 'prompting object' and used to lookup whether the prompting object is the same as in any of our active quests
+//	//corresponds to:
+//		//row name for landmarks
+//		//?? for dialogue
+//	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+//	FLandmarkData Landmark;
+//
+//	virtual FGuid GetGuid() override;
+//	
+//};
 
 USTRUCT(BlueprintType)
 struct FRDQuestObjective

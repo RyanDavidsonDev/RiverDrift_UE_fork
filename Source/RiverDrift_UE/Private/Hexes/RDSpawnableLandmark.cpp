@@ -4,6 +4,7 @@
 #include "Hexes/RDSpawnableLandmark.h"
 #include "Kismet/KismetMathLibrary.h"
 #include "Hexes/SpawnableTile.h"
+#include "Quests/RDQuestManagerSubsystem.h"
 #include "PaperSpriteComponent.h"
 
 // Sets default values
@@ -37,6 +38,8 @@ void ARDSpawnableLandmark::InitializeLandmark(TArray<ASpawnableTile*> _Composing
 	if (_bIsPotential) {
 		SetSpriteAlpha(Sprite, .75);
 	}
+
+	GetWorld()->GetSubsystem<URDQuestManagerSubsystem>()->CheckProgression_Implementation(EConditionType::CE_NewLandmark, LandmarkData.QuestID);
 }
 
 void ARDSpawnableLandmark::Interact_Implementation()

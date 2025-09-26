@@ -7,6 +7,7 @@
 #include "Subsystems/WorldSubsystem.h"
 //#include "Enumerators/QuestEnums.h"
 #include "Quests/RDQuestline.h"
+#include "Misc/Guid.h"
 #include "RDQuestManagerSubsystem.generated.h"
 
 //class URDQuestLine;
@@ -53,7 +54,7 @@ protected:
 
     //otherID follows conventions set by the progressionCondition struct. landmarks are the row name.
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-    void CheckProgression(EConditionType ConditionType, FName OtherID);
+    void CheckProgression(EConditionType ConditionType, FGuid OtherID);
     
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
     void ProgressQuestline(FName Questline);
