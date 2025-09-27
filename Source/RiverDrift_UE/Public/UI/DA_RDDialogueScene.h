@@ -9,6 +9,9 @@
 
 struct FRDDialogueResponseOption;
 struct FRDDialogueSlide;
+struct FDialogueQuestLookup;
+
+static const FString TablePath = TEXT("/Game/Data/cutscenes/DT_DialogueQuestLookup.DT_DialogueQuestLookup");
 
 USTRUCT(BlueprintType)
 struct FRDDialogueResponseOption
@@ -55,13 +58,38 @@ class RIVERDRIFT_UE_API UDA_RDDialogueScene : public UDataAsset
 {
 	GENERATED_BODY()
 
+	UDA_RDDialogueScene();
 public:
+
+	//UDA_RDDialogueScene();
+#if WITH_EDITOR
+	virtual void PostInitProperties() override;
+#endif
+
+	virtual void PostLoad() override;
+
+	void RegisterDataTable();
+
+	UFUNCTION(BlueprintCallable)
+	void CloseDialogueScene();
+
+	
+	TObjectPtr<FDialogueQuestLookup> QuestLookupRow;
+
+
+	UPROPERTY(VisibleAnywhere,BlueprintReadonly)
+	UDataTable* QuestLookupDataTable;
+
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	UTexture2D* CharacterPortrait;
 
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	TArray<FRDDialogueSlide> Slides;
 
+private:
+
 
 	
 };
+
+//static const FString TablePath = TEXT("/Game/Data/Dialogue/DT_DialogueQuestLookup.DT_DialogueQuestLookup");

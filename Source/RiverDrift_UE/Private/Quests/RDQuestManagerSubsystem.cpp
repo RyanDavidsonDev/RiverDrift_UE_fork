@@ -17,8 +17,8 @@ void URDQuestManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     UE_LOG(LogTemp, Warning, TEXT("rcs: cpp init start"))
 
-    ActiveConditions.Add(EConditionType::CE_Dialogue, TMap<FName, TObjectPtr<URDQuestLine>>());
-    ActiveConditions.Add(EConditionType::CE_NewLandmark, TMap<FName, TObjectPtr<URDQuestLine>>());
+    ActiveConditions.Add(EConditionType::CE_Dialogue, TMap<FGuid, TObjectPtr<URDQuestLine>>());
+    ActiveConditions.Add(EConditionType::CE_NewLandmark, TMap<FGuid, TObjectPtr<URDQuestLine>>());
     Super::Initialize(Collection);
     InitializeSubsystem();
 
@@ -41,15 +41,17 @@ void URDQuestManagerSubsystem::StartQuestline_Implementation(URDQuestLine* Quest
 
 
     if (QuestLine->AllObjectives.Num() >= 1) {
-        FRDProgressionCondition FirstObjective = QuestLine->AllObjectives[0].ProgressionCondition;
-        TMap < FName, TObjectPtr<URDQuestLine>>* map = ActiveConditions.Find(FirstObjective.ConditionType);
-        if (map != nullptr) {
-            map->Add(FirstObjective.OtherID, QuestLine);
+        FRDQuestObjective FirstObjective = QuestLine->AllObjectives[0];
+        TMap<FGuid, TObjectPtr<URDQuestLine >> *Map = ActiveConditions.Find(FirstObjective.ProgressionConditionType);
+        if (Map != nullptr) {
+            //Map->Add(FirstObjective.ProgressionOtherObject.QuestID, QuestLine);
+            Map->Add(FirstObjective.RowHandle.GetRow<FQuestLookup>(TEXT("START QUESTLINE"))->QuestID, QuestLine );
+                //FirstObjective.ProgressionOtherObject, QuestLine);
 
             //UE_LOG(LogTemp, Warning, TEXT("SUCCESS"))
             UE_LOG(QuestLog, Log, TEXT("Start Questline successful? size of actives is% d, actives[questline].size() is% d "),
                 ActiveConditions.Num(),
-                map->Num())
+                Map->Num())
         }
         else {
 
@@ -73,7 +75,14 @@ void URDQuestManagerSubsystem::ProgressQuestline_Implementation(FName Questline)
 
 void URDQuestManagerSubsystem::CheckProgression_Implementation(EConditionType ConditionType, FGuid OtherID)
 {
-    UE_LOG(QuestLog, Warning, TEXT("CheckProgression called"))
+    UE_LOG(QuestLog, Log, TEXT("CheckProgression called for condition %s, OtherID is %s"), *UEnum::GetValueAsString(ConditionType), *OtherID.ToString())
+    TMap<FGuid, TObjectPtr<URDQuestLine>>* Map = ActiveConditions.Find(ConditionType);
+    if (TObjectPtr< URDQuestLine> QuestLine = *Map->Find(OtherID)) {
+
+        UE_LOG(QuestLog, Log, TEXT("successfully found the row"))
+
+    }
+
 
 
 }

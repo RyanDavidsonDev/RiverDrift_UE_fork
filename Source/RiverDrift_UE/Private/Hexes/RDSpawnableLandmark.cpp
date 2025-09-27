@@ -39,7 +39,7 @@ void ARDSpawnableLandmark::InitializeLandmark(TArray<ASpawnableTile*> _Composing
 		SetSpriteAlpha(Sprite, .75);
 	}
 
-	GetWorld()->GetSubsystem<URDQuestManagerSubsystem>()->CheckProgression_Implementation(EConditionType::CE_NewLandmark, LandmarkData.QuestID);
+	GetWorld()->GetSubsystem<URDQuestManagerSubsystem>()->CheckProgression(EConditionType::CE_NewLandmark, LandmarkData.QuestID);
 }
 
 void ARDSpawnableLandmark::Interact_Implementation()

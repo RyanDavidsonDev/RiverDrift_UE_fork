@@ -28,19 +28,25 @@ public:
 protected:
 
     //UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    TMap < EConditionType, TMap<FName, TObjectPtr<URDQuestLine>>> ActiveConditions;
+    TMap < EConditionType, TMap<FGuid, TObjectPtr<URDQuestLine>>> ActiveConditions;
 
     //UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     //U
 
     // --- Functions ---
 public:
+
+
     URDQuestManagerSubsystem();
 
     virtual void Initialize(FSubsystemCollectionBase& Collection) override;
     virtual void Deinitialize() override;
 
+    //otherID follows conventions set by the progressionCondition struct. landmarks are the row name.
+    UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
+    void CheckProgression(EConditionType ConditionType, FGuid OtherID);
     //UFUNCTION(BlueprintGetter)
+    
     //TMap < EConditionType, TMap<FName, TObjectPtr<URDQuestLine>>> GetActiveConditions() { return ActiveConditions; };
     
 protected:
@@ -52,9 +58,6 @@ protected:
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
     void StartQuestline(URDQuestLine* QuestLine);
 
-    //otherID follows conventions set by the progressionCondition struct. landmarks are the row name.
-    UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-    void CheckProgression(EConditionType ConditionType, FGuid OtherID);
     
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
     void ProgressQuestline(FName Questline);

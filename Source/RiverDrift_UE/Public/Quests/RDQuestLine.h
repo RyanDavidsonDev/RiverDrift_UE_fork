@@ -35,7 +35,7 @@ public:
 		//row name for landmarks
 		//?? for dialogue
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	FName OtherID;
+	FGuid OtherID;
 	//FTableRowBase OtherObject;
 
 	//FGuid GetGuid();
@@ -69,16 +69,25 @@ struct FRDQuestObjective
 public:
 	FRDQuestObjective();
 
-	//unique name for backend
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	FName ObjectiveID;
+	////unique name for backend
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+	//FName ObjectiveID;
 
 	//player facing name
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	FText ObjectiveTitle;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	FRDProgressionCondition ProgressionCondition;
+	EConditionType ProgressionConditionType;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+	FQuestLookup ProgressionOtherObject;
+
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+	FDataTableRowHandle RowHandle;
+
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+	//FRDProgressionCondition ProgressionCondition;
 
 	//(optional) a dialogue scene to play when the player STARTS this quest Objective
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
@@ -113,8 +122,8 @@ public:
 	FText QuestTitle;
 
 	//backend unique name
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	FName QuestID;
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+	//FGuid QuestID;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	TArray<FRDQuestObjective> AllObjectives;

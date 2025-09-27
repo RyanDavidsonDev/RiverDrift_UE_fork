@@ -19,8 +19,6 @@ class RIVERDRIFT_UE_API ARDSpawnableLandmark : public AActor
 
 
 public:
-
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Landmarks")
 	TArray<ASpawnableTile*> ComposingTiles;
 
