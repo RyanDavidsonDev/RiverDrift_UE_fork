@@ -21,9 +21,9 @@ class RIVERDRIFT_UE_API URDQuestManagerSubsystem : public UWorldSubsystem
 public:
 
     UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-    TArray<TObjectPtr<URDQuestLine>> ActiveQuestLines;
 
-
+    TMap<FGuid, TObjectPtr<URDQuestLine>> ActiveQuestLines;
+    
 
 protected:
 
@@ -44,7 +44,8 @@ public:
 
     //otherID follows conventions set by the progressionCondition struct. landmarks are the row name.
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-    void CheckProgression(EConditionType ConditionType, FGuid OtherID);
+    //void CheckProgression(EConditionType ConditionType, FGuid ObjectiveObjectID);
+    void CheckProgression(EConditionType ConditionType, FGuid ObjectiveObjectID);
     //UFUNCTION(BlueprintGetter)
     
     //TMap < EConditionType, TMap<FName, TObjectPtr<URDQuestLine>>> GetActiveConditions() { return ActiveConditions; };
@@ -60,7 +61,7 @@ protected:
 
     
     UFUNCTION(BlueprintNativeEvent, BlueprintCallable)
-    void ProgressQuestline(FName Questline);
+    void ProgressQuestline(URDQuestLine* QuestLine);
 
 
 };

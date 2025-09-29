@@ -4,6 +4,10 @@
 #include "Quests/RDQuestLine.h"
 #include "Hexes/TileData.h"
 
+//URDQuestLine::URDQuestLine() {
+//	QuestID = FGuid::NewGuid();
+//}
+
 FRDProgressionCondition::FRDProgressionCondition()
 {
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
@@ -36,9 +40,55 @@ FRDQuestObjective::FRDQuestObjective()
 	//TObjectPtr<UDA_RDDialogueScene> InitializationScene;
 }
 
-void URDQuestLine::ProgressQuestline_Implementation()
+bool URDQuestLine::ProgressQuestline_Implementation()
 {
+	if (AllObjectives.Num() <= CurrentObjectiveIndex + 1) {
+		UE_LOG(QuestLog, Log, TEXT("questline completed"))
+			return true;
+	}
+	else {
+		UE_LOG(QuestLog, Log, TEXT("inc'ing objective"))
+		CurrentObjectiveIndex++;
+
+		return false;
+	}
 }
+
+#if WITH_EDITOR
+void URDQuestLine::PostInitProperties()
+{
+	Super::PostInitProperties();
+
+	if (!HasAnyFlags(RF_ClassDefaultObject) && !QuestID.IsValid()) {
+		QuestID = FGuid::NewGuid();
+
+		Modify();
+		MarkPackageDirty();
+	}
+}
+
+void URDQuestLine::PostLoad()
+{
+	Super::PostLoad();
+
+	if (!QuestID.IsValid())
+	{
+		QuestID = FGuid::NewGuid();
+		Modify();
+		MarkPackageDirty();
+	}
+}
+
+void URDQuestLine::PostDuplicate(EDuplicateMode::Type DuplicateMode)
+{
+	Super::PostDuplicate(DuplicateMode);
+
+	if (!HasAnyFlags(RF_ClassDefaultObject))
+	{
+		QuestID = FGuid::NewGuid();
+	}
+}
+#endif
 
 FRDQuestObjective URDQuestLine::GetCurrentQuestObjective()
 {
@@ -60,3 +110,30 @@ int URDQuestLine::GetCurrentQuestObjectiveIndex()
 //	//Landmark
 //	return Landmark.
 //}
+
+void URDQuestLine::InitializeFromRowHandle() {
+
+	UE_LOG(QuestLog, Log, TEXT("initializing"))
+	for (FRDQuestObjective& Objective : AllObjectives) {
+		if (Objective.QuestRowHandle.DataTable) {
+			if (FQuestLookup* Row = Objective.QuestRowHandle.GetRow<FQuestLookup>(TEXT("initialize from row handle"))) {
+				Objective.ProgressionOtherObject.QuestID = Row->QuestID;
+			}
+		}
+	}
+}
+
+#if WITH_EDITOR
+void URDQuestLine::PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent) {
+	Super::PostEditChangeProperty(PropertyChangedEvent);
+
+	FName PropName = PropertyChangedEvent.Property ? PropertyChangedEvent.Property->GetFName() : NAME_None;
+
+	UE_LOG(QuestLog, Log, TEXT("received edit, propname is %s"), *PropName.ToString())
+
+	//if (PropName == GET_MEMBER_NAME_CHECKED(FRDQuestObjective, QuestRowHandle.RowName ) || PropName == GET_MEMBER_NAME_CHECKED(FRDQuestObjective, QuestRowHandle.TableName)) {
+	if (PropName == GET_MEMBER_NAME_CHECKED(FDataTableRowHandle, RowName )) {
+		InitializeFromRowHandle();
+	}
+}
+#endif

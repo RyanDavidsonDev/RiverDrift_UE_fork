@@ -5,6 +5,7 @@
 #include "CoreMinimal.h"
 #include "Engine/DataAsset.h"
 #include "Hexes/TileData.h"
+#include "Quests/QuestLookup.h"
 #include "RDQuestLine.generated.h"
 
 class UDA_RDDialogueScene;
@@ -82,9 +83,9 @@ public:
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	FQuestLookup ProgressionOtherObject;
-
+		
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	FDataTableRowHandle RowHandle;
+	FDataTableRowHandle QuestRowHandle;
 
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	//FRDProgressionCondition ProgressionCondition;
@@ -94,6 +95,8 @@ public:
 	TObjectPtr<UDA_RDDialogueScene> InitializationScene;
 	//UDA_RDDialogueScene InitializationScene;
 
+
+	
 };
 //
 //USTRUCT(BlueprintType)
@@ -116,14 +119,16 @@ class RIVERDRIFT_UE_API URDQuestLine : public UDataAsset
 // --- Variables ---
 
 public:
+	
+
 
 	//player facing name
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	FText QuestTitle;
 
 	//backend unique name
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	//FGuid QuestID;
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Quests")
+	FGuid QuestID;
 
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	TArray<FRDQuestObjective> AllObjectives;
@@ -133,10 +138,15 @@ public:
 
 	UFUNCTION(BlueprintGetter, Category = "Quests")
 	int GetCurrentQuestObjectiveIndex();
+	void InitializeFromRowHandle();
+
+#if WITH_EDITOR
+	virtual void PostEditChangeProperty(FPropertyChangedEvent& PropertyChangedEvent);
+#endif
 
 protected:
 	UPROPERTY(VisibleAnywhere, Category = "Quests")
-	int CurrentObjectiveIndex;
+	int CurrentObjectiveIndex =0;
 
 
 
@@ -145,9 +155,16 @@ private:
 
 	// --- Functions ---
 public:
+#if WITH_EDITOR
+	virtual void PostInitProperties() override;
+
+	virtual void PostLoad() override;
+
+	virtual void PostDuplicate(EDuplicateMode::Type DuplicateMode) override;
+#endif
 
 	UFUNCTION(BlueprintNativeEvent)
-	void ProgressQuestline();
+	bool ProgressQuestline();
 
-
+	void ResetIndex() { CurrentObjectiveIndex = 0; };
 };
