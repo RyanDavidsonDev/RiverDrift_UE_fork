@@ -64,4 +64,7 @@ protected:
     void ProgressQuestline(URDQuestLine* QuestLine);
 
 
+    UFUNCTION(BlueprintNativeEvent)
+    void PlayProgressionScene(FRDQuestObjective PrevObjective, URDQuestLine* Quest, bool Completed);
+
 };

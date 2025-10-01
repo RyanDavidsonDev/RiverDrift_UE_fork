@@ -49,8 +49,6 @@ void UDA_RDDialogueScene::PostLoad()
 
 void UDA_RDDialogueScene::RegisterDataTable()
 {
-	static const FString nTablePath = TEXT("/Game/Data/Dialogue/DT_DialogueQuestLookup.DT_DialogueQuestLookup");
-	static const FString tp = TablePath;
 	UDataTable* DataTable = LoadObject<UDataTable>(nullptr, *TablePath);
 
 	if (!DataTable) {

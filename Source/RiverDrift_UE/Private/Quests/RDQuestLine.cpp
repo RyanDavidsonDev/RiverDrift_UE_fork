@@ -23,7 +23,7 @@ FRDProgressionCondition::FRDProgressionCondition()
 
 FRDQuestObjective::FRDQuestObjective()
 {
-
+	DefaultProgressionScene = LoadObject<UDA_RDDialogueScene>(nullptr, *BasicProgressionScenePath);
 	////unique name for backend
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	//FName QuestID;
@@ -77,6 +77,8 @@ void URDQuestLine::PostLoad()
 		Modify();
 		MarkPackageDirty();
 	}
+
+	
 }
 
 void URDQuestLine::PostDuplicate(EDuplicateMode::Type DuplicateMode)
@@ -95,9 +97,14 @@ FRDQuestObjective URDQuestLine::GetCurrentQuestObjective()
 	return AllObjectives[CurrentObjectiveIndex];
 }
 
-int URDQuestLine::GetCurrentQuestObjectiveIndex()
+void URDQuestLine::GetCurrentQuestObjective_BP(FRDQuestObjective &Objective)
 {
-	return CurrentObjectiveIndex;
+	Objective = GetCurrentQuestObjective();
+}
+
+void URDQuestLine::GetCurrentQuestObjectiveIndex(int &Index)
+{
+	Index = CurrentObjectiveIndex;
 }
 
 //FRDProgressionCondition_Landmark::FRDProgressionCondition_Landmark()
@@ -115,8 +122,8 @@ void URDQuestLine::InitializeFromRowHandle() {
 
 	UE_LOG(QuestLog, Log, TEXT("initializing"))
 	for (FRDQuestObjective& Objective : AllObjectives) {
-		if (Objective.QuestRowHandle.DataTable) {
-			if (FQuestLookup* Row = Objective.QuestRowHandle.GetRow<FQuestLookup>(TEXT("initialize from row handle"))) {
+		if (Objective.ProgressionOtherObject.OtherObjectRowHandle.DataTable) {
+			if (FQuestLookup* Row = Objective.ProgressionOtherObject.OtherObjectRowHandle.GetRow<FQuestLookup>(TEXT("initialize from row handle"))) {
 				Objective.ProgressionOtherObject.QuestID = Row->QuestID;
 			}
 		}

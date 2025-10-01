@@ -11,6 +11,8 @@
 class UDA_RDDialogueScene;
 //struct FLandmarkData;
 
+static const FString BasicProgressionScenePath = TEXT("/Game/Data/cutscenes/DA_DS_BasicQuestAdvancement.DA_DS_BasicQuestAdvancement");
+
 UENUM(BlueprintType)
 enum class EConditionType : uint8
 {
@@ -81,18 +83,32 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	EConditionType ProgressionConditionType;
 
+
+	//Used to set the reference to what other object is associated with this quest. 
+	// When the player "interacts" with this object, the quest will progress
+	// - Table: needs to be set to the landmarks data table or the dialogue quest lookup table
+	// - Row: the row within that table that will identify the object
+	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+	//FDataTableRowHandle ProgressionOtherObjectLookup;
+
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	FQuestLookup ProgressionOtherObject;
 		
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	FDataTableRowHandle QuestRowHandle;
 
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	//FRDProgressionCondition ProgressionCondition;
 
-	//(optional) a dialogue scene to play when the player STARTS this quest Objective
+	//if true, will play a basic progression scene BEFORE other completion scene
+	// scene will basically be "you completed the objective, here's your next one"
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	TObjectPtr<UDA_RDDialogueScene> InitializationScene;
+	bool PlayDefaultProgressionScene;
+
+	//(optional) a dialogue scene to play when the player FINISHES this quest Objective
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+	TObjectPtr<UDA_RDDialogueScene> CompletionScene;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Quests")
+	TObjectPtr<UDA_RDDialogueScene> DefaultProgressionScene;
 	//UDA_RDDialogueScene InitializationScene;
 
 
@@ -133,11 +149,15 @@ public:
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	TArray<FRDQuestObjective> AllObjectives;
 
-	UFUNCTION(BlueprintGetter, Category = "Quests")
+	//UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Quests")
 	FRDQuestObjective GetCurrentQuestObjective();
 
-	UFUNCTION(BlueprintGetter, Category = "Quests")
-	int GetCurrentQuestObjectiveIndex();
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Quests")
+	void GetCurrentQuestObjective_BP(UPARAM(DisplayName = "Objective") FRDQuestObjective& Objective);
+
+	UFUNCTION(BlueprintCallable, BlueprintPure, Category = "Quests")
+	void GetCurrentQuestObjectiveIndex(UPARAM(DisplayName = "Index") int &Index);
+	 
 	void InitializeFromRowHandle();
 
 #if WITH_EDITOR

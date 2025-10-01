@@ -3,6 +3,8 @@
 
 #include "Quests/RDQuestManagerSubsystem.h"
 #include "../RiverDrift_UE.h"
+#include "Kismet/GameplayStatics.h"
+#include "Player/RD_PlayerController.h"
 #include "Quests/RDQuestLine.h"
 
 
@@ -41,7 +43,7 @@ void URDQuestManagerSubsystem::StartQuestline_Implementation(URDQuestLine* Quest
         TMap<FGuid, TObjectPtr<URDQuestLine >> *Map = ActiveConditions.Find(FirstObjective.ProgressionConditionType);
         if (Map != nullptr) {
             //Map->Add(FirstObjective.ProgressionOtherObject.QuestID, QuestLine);
-            Map->Add(FirstObjective.ProgressionOtherObject.QuestID, QuestLine );
+            Map->Add(FirstObjective.ProgressionOtherObject.QuestID , QuestLine );
                 //FirstObjective.ProgressionOtherObject, QuestLine);
 
             //UE_LOG(LogTemp, Warning, TEXT("SUCCESS"))
@@ -114,11 +116,15 @@ void URDQuestManagerSubsystem::ProgressQuestline_Implementation(URDQuestLine* Qu
     }
 
     if (QuestLine->ProgressQuestline()) {
+
+        PlayProgressionScene(PreviousObjective, QuestLine, true);
         UE_LOG(QuestLog, Log, TEXT("IN FACT, YOU COMPLETED THE WHOLE QUESTLINE!! BIG CONGRATS!! \n - \n -"))
     }
     else {
+
         FRDQuestObjective NewObjective = QuestLine->GetCurrentQuestObjective();
-            
+        PlayProgressionScene(PreviousObjective, QuestLine, false);
+
         ActiveConditions.Find(NewObjective.ProgressionConditionType)->Add(
             NewObjective.ProgressionOtherObject.QuestID, QuestLine);
             
@@ -136,4 +142,55 @@ void URDQuestManagerSubsystem::InitializeSubsystem_Implementation()
 void URDQuestManagerSubsystem::DeinitializeSubsystem_Implementation()
 {
 }
+
+void URDQuestManagerSubsystem::PlayProgressionScene_Implementation(FRDQuestObjective PrevObjective, URDQuestLine* Quest, bool Completed)
+{
+    UE_LOG(QuestLog, Log, TEXT("playprogscene_implementation called"))
+    if (!IsValid(PrevObjective.CompletionScene)) {
+        //do we want to do anything if the scene isn't set? 
+        // My inclination is that that's the way for designers to avoid having anything pop up.
+        // alternatively we could just play it with a call to the basic scene. 
+        // I think ideally the designers would set a bool for whether or not they want to 
+        // play that scene, but that's not necessary for this demo so I'm moving on
+        
+        //Cast< ARD_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->StartDialogueScene(PrevObjective.CompletionScene, TEXT("congrats"));
+        //return;
+    }
+    Cast< ARD_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->BeginDialogueScene(PrevObjective.CompletionScene, FText());
+
+    FText Intro;
+    if (PrevObjective.PlayDefaultProgressionScene) {
+        if (!IsValid(PrevObjective.DefaultProgressionScene)) {
+
+            UE_LOG(QuestLog, Error, TEXT("default progression scene isn't valid"))
+                return;
+        }
+
+        UE_LOG(QuestLog, Log, TEXT("2"))
+            if (Completed) {
+            Intro = FText::Format(FText::FromString(
+                TEXT("You completed the {0} quest. congrats!")), Quest->QuestTitle);
+        UE_LOG(QuestLog, Log, TEXT("3"))
+        }
+            else {
+            Intro = FText::Format(FText::FromString(
+                TEXT("You completed the {0} step of the {1} quest. your next objective is to {2}.")),
+                PrevObjective.ObjectiveTitle,
+                Quest->QuestTitle,
+                Quest->GetCurrentQuestObjective().ObjectiveTitle
+            );
+
+            UE_LOG(QuestLog, Log, TEXT("4"))
+            }
+
+        Cast< ARD_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->BeginDialogueScene(PrevObjective.DefaultProgressionScene, Intro);
+
+    }
+
+    UE_LOG(QuestLog, Log, TEXT("5"))
+
+    
+
+}
+
 

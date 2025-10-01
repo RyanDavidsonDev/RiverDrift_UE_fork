@@ -39,7 +39,6 @@ void ARDSpawnableLandmark::InitializeLandmark(TArray<ASpawnableTile*> _Composing
 		SetSpriteAlpha(Sprite, .75);
 	}
 
-	GetWorld()->GetSubsystem<URDQuestManagerSubsystem>()->CheckProgression(EConditionType::CE_NewLandmark, LandmarkData.QuestID);
 }
 
 void ARDSpawnableLandmark::Interact_Implementation()
@@ -51,6 +50,7 @@ void ARDSpawnableLandmark::Interact_Implementation()
 
 	} else {
 		UE_LOGFMT(LogTemp, Log, "Player clicked a solidified landmark, time to execute the other functionality");
+		GetWorld()->GetSubsystem<URDQuestManagerSubsystem>()->CheckProgression(EConditionType::CE_NewLandmark, LandmarkData.QuestID);
 
 	}
 }
