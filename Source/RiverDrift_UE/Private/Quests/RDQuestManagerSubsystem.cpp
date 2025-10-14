@@ -43,7 +43,7 @@ void URDQuestManagerSubsystem::StartQuestline_Implementation(URDQuestLine* Quest
         TMap<FGuid, TObjectPtr<URDQuestLine >> *Map = ActiveConditions.Find(FirstObjective.ProgressionConditionType);
         if (Map != nullptr) {
             //Map->Add(FirstObjective.ProgressionOtherObject.QuestID, QuestLine);
-            Map->Add(FirstObjective.ProgressionOtherObject.QuestID , QuestLine );
+            Map->Add(FirstObjective.OtherObjectQuestID , QuestLine );
                 //FirstObjective.ProgressionOtherObject, QuestLine);
 
             //UE_LOG(LogTemp, Warning, TEXT("SUCCESS"))
@@ -100,9 +100,9 @@ void URDQuestManagerSubsystem::ProgressQuestline_Implementation(URDQuestLine* Qu
     if (TMap<FGuid, TObjectPtr<URDQuestLine>>* ActiveConditionOfProgressionType 
             = ActiveConditions.Find(PreviousObjective.ProgressionConditionType)) {
         if (ActiveConditionOfProgressionType->Contains(
-                PreviousObjective.ProgressionOtherObject.QuestID)) {
+                PreviousObjective.OtherObjectQuestID)) {
             ActiveConditionOfProgressionType->Remove(
-                PreviousObjective.ProgressionOtherObject.QuestID);
+                PreviousObjective.OtherObjectQuestID);
 
         }
         else {
@@ -126,7 +126,7 @@ void URDQuestManagerSubsystem::ProgressQuestline_Implementation(URDQuestLine* Qu
         PlayProgressionScene(PreviousObjective, QuestLine, false);
 
         ActiveConditions.Find(NewObjective.ProgressionConditionType)->Add(
-            NewObjective.ProgressionOtherObject.QuestID, QuestLine);
+            NewObjective.OtherObjectQuestID, QuestLine);
             
         UE_LOG(QuestLog, Log, TEXT("your next objective is %s"), *NewObjective.ObjectiveTitle.ToString())
     }

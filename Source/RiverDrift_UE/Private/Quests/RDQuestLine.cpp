@@ -122,9 +122,9 @@ void URDQuestLine::InitializeFromRowHandle() {
 
 	UE_LOG(QuestLog, Log, TEXT("initializing"))
 	for (FRDQuestObjective& Objective : AllObjectives) {
-		if (Objective.ProgressionOtherObject.OtherObjectRowHandle.DataTable) {
-			if (FQuestLookup* Row = Objective.ProgressionOtherObject.OtherObjectRowHandle.GetRow<FQuestLookup>(TEXT("initialize from row handle"))) {
-				Objective.ProgressionOtherObject.QuestID = Row->QuestID;
+		if (Objective.OtherObjectRowHandle.DataTable) {
+			if (FQuestLookup* Row = Objective.OtherObjectRowHandle.GetRow<FQuestLookup>(TEXT("initialize from row handle"))) {
+				Objective.OtherObjectQuestID= Row->QuestID;
 			}
 		}
 	}

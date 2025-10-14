@@ -91,21 +91,30 @@ public:
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	//FDataTableRowHandle ProgressionOtherObjectLookup;
 
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	FQuestLookup ProgressionOtherObject;
-		
-
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	//FRDProgressionCondition ProgressionCondition;
+	//FQuestLookup ProgressionOtherObject;
+
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tiles")
+	FGuid OtherObjectQuestID;
+
+
+	//Used to set the reference to what other object is associated with this quest. 
+	// When the player "interacts" with this object, the quest will progress
+	// - Table: needs to be set to the landmarks data table or the dialogue quest lookup table
+	// - Row: the row within that table that will identify the object
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+	FDataTableRowHandle OtherObjectRowHandle;
+		
+	//(optional) a dialogue scene to play when the player FINISHES this quest Objective
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+	TObjectPtr<UDA_RDDialogueScene> CompletionScene;
 
 	//if true, will play a basic progression scene BEFORE other completion scene
 	// scene will basically be "you completed the objective, here's your next one"
 	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
 	bool PlayDefaultProgressionScene;
 
-	//(optional) a dialogue scene to play when the player FINISHES this quest Objective
-	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	TObjectPtr<UDA_RDDialogueScene> CompletionScene;
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Quests")
 	TObjectPtr<UDA_RDDialogueScene> DefaultProgressionScene;
