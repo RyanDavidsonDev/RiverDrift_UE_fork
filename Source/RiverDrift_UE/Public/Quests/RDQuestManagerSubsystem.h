@@ -28,7 +28,9 @@ public:
 protected:
 
     //UPROPERTY(VisibleAnywhere, BlueprintReadWrite)
-    TMap < EConditionType, TMap<FGuid, TObjectPtr<URDQuestLine>>> ActiveConditions;
+    TMap < EConditionType, TMap<FGuid, TArray< TObjectPtr<URDQuestLine>>>> ActiveConditions;
+
+    void AddConditionToTrack();
 
     //UPROPERTY(EditDefaultsOnly, BlueprintReadWrite)
     //U

@@ -36,7 +36,7 @@ public:
 	FRDDialogueSlide();
 
 	FText DialogueIntro;
-	UPROPERTY(BlueprintReadOnly, EditAnywhere)
+	UPROPERTY(BlueprintReadWrite, EditAnywhere)
 	FText DialogueMainBody;
 	UPROPERTY(BlueprintReadOnly, EditAnywhere)
 	FText DialogueOutro;
@@ -58,8 +58,9 @@ class RIVERDRIFT_UE_API UDA_RDDialogueScene : public UDataAsset
 {
 	GENERATED_BODY()
 
-	UDA_RDDialogueScene();
 public:
+	UDA_RDDialogueScene(); 
+	//UDA_RDDialogueScene(const UDA_RDDialogueScene& other)
 
 	//UDA_RDDialogueScene();
 #if WITH_EDITOR

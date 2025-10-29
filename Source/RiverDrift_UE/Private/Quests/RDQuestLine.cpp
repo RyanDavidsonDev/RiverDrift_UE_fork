@@ -10,34 +10,34 @@
 
 FRDProgressionCondition::FRDProgressionCondition()
 {
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	//EConditionType ConditionType;
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+	ConditionType = EConditionType::UNSET;
 
-	////A Unique ID/name passed from the 'prompting object' and used to lookup whether the prompting object is the same as in any of our active quests
-	////corresponds to:
-	//	//row name for landmarks
-	//	//?? for dialogue
-	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	//FName OtherID;
+	//A Unique ID/name passed from the 'prompting object' and used to lookup whether the prompting object is the same as in any of our active quests
+	//corresponds to:
+		//row name for landmarks
+		//?? for dialogue
+	UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
+	OtherID = FGuid();
 }
 
 FRDQuestObjective::FRDQuestObjective()
 {
 	DefaultProgressionScene = LoadObject<UDA_RDDialogueScene>(nullptr, *BasicProgressionScenePath);
-	////unique name for backend
+	//unique name for backend
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	//FName QuestID;
+	//FName QuestID = FName();
 
 	////player facing name
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	//FText QuestTitle;
+	//FText QuestTitle = FText();
 
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	//EConditionType ConditionType;
+	//EConditionType ConditionType = EConditionType::UNSET;
 
 	////(optional) a dialogue scene to play when the player STARTS this quest Objective
 	//UPROPERTY(EditDefaultsOnly, BlueprintReadWrite, Category = "Quests")
-	//TObjectPtr<UDA_RDDialogueScene> InitializationScene;
+	//DefaultProgressionScene = LoadObject<UDA_RDDialogueScene>(nullptr, TEXT("Game/Data/Dialogue"));
 }
 
 bool URDQuestLine::ProgressQuestline_Implementation()

@@ -86,7 +86,7 @@ public:
 	void EndOverlapCallback(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
 	UFUNCTION(BlueprintImplementableEvent)
-	void BeginDialogueScene(UDA_RDDialogueScene* DialogueScene, const FText& Intro);
+	void BeginDialogueScene(UDA_RDDialogueScene* DialogueScene);
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */

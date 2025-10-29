@@ -29,6 +29,14 @@ UDA_RDDialogueScene::UDA_RDDialogueScene() {
 	//TablePath = 
 
 }
+//
+//UDA_RDDialogueScene::UDA_RDDialogueScene(const UDA_RDDialogueScene& other) {
+//	this->QuestLookupRow = other.QuestLookupRow;
+//	this->QuestLookupDataTable = other.QuestLookupDataTable;
+//	this->Slides = other.Slides;
+//
+//
+//}
 
 #if WITH_EDITOR
 void UDA_RDDialogueScene::PostInitProperties()

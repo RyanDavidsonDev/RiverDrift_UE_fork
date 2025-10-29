@@ -18,8 +18,8 @@ void URDQuestManagerSubsystem::Initialize(FSubsystemCollectionBase& Collection)
 {
     UE_LOG(LogTemp, Warning, TEXT("rcs: cpp init start"))
 
-    ActiveConditions.Add(EConditionType::CE_Dialogue, TMap<FGuid, TObjectPtr<URDQuestLine>>());
-    ActiveConditions.Add(EConditionType::CE_NewLandmark, TMap<FGuid, TObjectPtr<URDQuestLine>>());
+    ActiveConditions.Add(EConditionType::CE_Dialogue, TMap<FGuid,  TArray<TObjectPtr<URDQuestLine>>>());
+    ActiveConditions.Add(EConditionType::CE_NewLandmark, TMap<FGuid, TArray<TObjectPtr<URDQuestLine>>>());
     Super::Initialize(Collection);
     InitializeSubsystem();
 
@@ -40,10 +40,23 @@ void URDQuestManagerSubsystem::StartQuestline_Implementation(URDQuestLine* Quest
 
     if (QuestLine->AllObjectives.Num() >= 1) {
         FRDQuestObjective FirstObjective = QuestLine->AllObjectives[0];
-        TMap<FGuid, TObjectPtr<URDQuestLine >> *Map = ActiveConditions.Find(FirstObjective.ProgressionConditionType);
+        TMap<FGuid, TArray<TObjectPtr<URDQuestLine>>> *Map = ActiveConditions.Find(FirstObjective.ProgressionConditionType);
         if (Map != nullptr) {
+
+            TArray<TObjectPtr<URDQuestLine>>* Objectives = Map->Find(FirstObjective.OtherObjectQuestID);
+            if (Objectives) {
+                //if we're already storing a reference to this quest object, then the array already exists and we need to inser
+                Objectives->Add(QuestLine);
+            }
+            else {
+                //if not, make a new one
+                TArray<TObjectPtr<URDQuestLine>> arr;
+                arr.Add(QuestLine);
+                Map->Add(FirstObjective.OtherObjectQuestID, arr);
+            }
+
+
             //Map->Add(FirstObjective.ProgressionOtherObject.QuestID, QuestLine);
-            Map->Add(FirstObjective.OtherObjectQuestID , QuestLine );
                 //FirstObjective.ProgressionOtherObject, QuestLine);
 
             //UE_LOG(LogTemp, Warning, TEXT("SUCCESS"))
@@ -63,13 +76,26 @@ void URDQuestManagerSubsystem::StartQuestline_Implementation(URDQuestLine* Quest
 void URDQuestManagerSubsystem::CheckProgression_Implementation(EConditionType ConditionType, FGuid ObjectiveObjectID)
 {
     UE_LOG(QuestLog, Log, TEXT("CheckProgression called for condition %s, OtherID is %s"), *UEnum::GetValueAsString(ConditionType), *ObjectiveObjectID.ToString())
-        if (TMap<FGuid, TObjectPtr<URDQuestLine>>* Map = ActiveConditions.Find(ConditionType))
-        {
-            if (TObjectPtr< URDQuestLine>* QuestLine = Map->Find(ObjectiveObjectID))
-            {
-                UE_LOG(QuestLog, Log, TEXT("successfully found the row. pretty sure that means the objective is completed"))
 
-                    ProgressQuestline((*QuestLine));
+        //check to see if active conditions contains any conditions of the given type
+        if (TMap<FGuid, TArray<TObjectPtr<URDQuestLine>>>* ConditionsOfGivenProgressionType
+            = ActiveConditions.Find(ConditionType))
+        {
+
+            TArray<TObjectPtr< URDQuestLine>> QuestLinesLinkedToGivenID;
+            //if it does, check to see whether any of those conditions match to the provided ID
+            if (ConditionsOfGivenProgressionType->RemoveAndCopyValue(ObjectiveObjectID, QuestLinesLinkedToGivenID))
+            {
+                //removes it from the array automatically
+
+                //this'll return an array, for each questline contained within that array, progress it
+                for (TObjectPtr < URDQuestLine> Quest : QuestLinesLinkedToGivenID) {
+                    ProgressQuestline(Quest);
+                    //CTODO: step back over other maps to see if they also contain the 'given questline(s) to allow for multiple ways to advance the question
+
+                }
+
+                UE_LOG(QuestLog, Log, TEXT("successfully found the row. pretty sure that means the objective is completed"))
             }
             else {
                 UE_LOG(QuestLog, Log, TEXT("failed to find the row. Objective ID is %s, "), *ObjectiveObjectID.ToString())
@@ -85,37 +111,47 @@ void URDQuestManagerSubsystem::ProgressQuestline_Implementation(URDQuestLine* Qu
     UE_LOG(QuestLog, Log,
         TEXT("pqic"))
 
-    if (!ActiveQuestLines.Find(QuestLine->QuestID)) {
-        UE_LOG(QuestLog, Error, 
-            TEXT("progress questline was passed a questline that isn't active (supposedly). Either it was passed an incorrect ql, or activeQL's is borkedquest ID is %s"), *QuestLine->QuestID.ToString())
-    }
+        if (!ActiveQuestLines.Find(QuestLine->QuestID)) {
+            UE_LOG(QuestLog, Error,
+                TEXT("progress questline was passed a questline that isn't active (supposedly). Either it was passed an incorrect ql, or activeQL's is borkedquest ID is %s"), *QuestLine->QuestID.ToString())
+        }
 
     UE_LOG(QuestLog, Log, TEXT("congratulations! you completed the %s objective in the %s questline, you should probably be seeing a proper UI element instead of (or at least in addition to) this debug log"),
         *QuestLine->GetCurrentQuestObjective().ObjectiveTitle.ToString(), *QuestLine->QuestTitle.ToString())
 
-    FRDQuestObjective PreviousObjective = QuestLine->GetCurrentQuestObjective();
+        FRDQuestObjective PreviousObjective = QuestLine->GetCurrentQuestObjective();
     //FRDQuestObjective PreviousObjective = QuestLine->AllObjectives[*QuestLineProgressionIndex.Find(QuestLine)];
 
-    //try to look up the 'nested map' and remove the condition
-    if (TMap<FGuid, TObjectPtr<URDQuestLine>>* ActiveConditionOfProgressionType 
-            = ActiveConditions.Find(PreviousObjective.ProgressionConditionType)) {
-        if (ActiveConditionOfProgressionType->Contains(
-                PreviousObjective.OtherObjectQuestID)) {
-            ActiveConditionOfProgressionType->Remove(
-                PreviousObjective.OtherObjectQuestID);
+    //following lines are deprecated, unsure why I was removing them in this function, but keeping them commented in case there was some reason
+    ////try to look up the 'nested map' and remove the condition
+    //if (TMap<FGuid, TArray<TObjectPtr<URDQuestLine>>>* ConditionsOfProgressionType
+    //    = ActiveConditions.Find(PreviousObjective.ProgressionConditionType)) {
+    //    
 
-        }
-        else {
-            UE_LOG(QuestLog, Warning, TEXT("not found"))
-        }
+    //    
+    //    if (ActiveConditionOfProgressionType->Contains(
+    //            PreviousObjective.OtherObjectQuestID)) {
+    //        //if we find the value
 
-    }
-    else {
-        UE_LOG(QuestLog, Error, TEXT("progress questline failed to grab the nested map"))
 
-    }
 
-    if (QuestLine->ProgressQuestline()) {
+    //        ActiveConditionOfProgressionType->Remove(
+    //            PreviousObjective.OtherObjectQuestID);
+    //        //UE_LOG(QuestLog, Log, TEXT("removing prev objective, po is %s"), *PreviousObjective.CompletionScene->GetName())
+
+
+    //    }
+    //    else {
+    //        UE_LOG(QuestLog, Warning, TEXT("not found"))
+    //    }
+
+    //}
+    //else {
+    //    UE_LOG(QuestLog, Error, TEXT("progress questline failed to grab the nested map"))
+
+    //}
+
+    if (QuestLine->ProgressQuestline()) {//always progresses questline, returns true if questline completed
 
         PlayProgressionScene(PreviousObjective, QuestLine, true);
         UE_LOG(QuestLog, Log, TEXT("IN FACT, YOU COMPLETED THE WHOLE QUESTLINE!! BIG CONGRATS!! \n - \n -"))
@@ -125,8 +161,26 @@ void URDQuestManagerSubsystem::ProgressQuestline_Implementation(URDQuestLine* Qu
         FRDQuestObjective NewObjective = QuestLine->GetCurrentQuestObjective();
         PlayProgressionScene(PreviousObjective, QuestLine, false);
 
-        ActiveConditions.Find(NewObjective.ProgressionConditionType)->Add(
-            NewObjective.OtherObjectQuestID, QuestLine);
+
+        //ctodo: do this as a function for both here and startquestline
+        if (TMap<FGuid, TArray<TObjectPtr<URDQuestLine>>>* MapOfIDsByConditionType
+            = ActiveConditions.Find(NewObjective.ProgressionConditionType) ) {
+            //Get the map of IDs of the givenCondition type
+
+            //then, check whether that map currently contains an array matched to the other's quest ID
+            if (TArray<TObjectPtr<URDQuestLine>>* QuestLines 
+                = MapOfIDsByConditionType->Find(NewObjective.OtherObjectQuestID)) {
+                //if it does, just add our quest to the array
+                QuestLines->Add(QuestLine);
+            }
+            else {
+                //if not, make a new one
+                TArray<TObjectPtr<URDQuestLine>> arr;
+                arr.Add(QuestLine);
+                MapOfIDsByConditionType->Add(NewObjective.OtherObjectQuestID, arr);
+            }
+        }
+
             
         UE_LOG(QuestLog, Log, TEXT("your next objective is %s"), *NewObjective.ObjectiveTitle.ToString())
     }
@@ -145,6 +199,7 @@ void URDQuestManagerSubsystem::DeinitializeSubsystem_Implementation()
 
 void URDQuestManagerSubsystem::PlayProgressionScene_Implementation(FRDQuestObjective PrevObjective, URDQuestLine* Quest, bool Completed)
 {
+    //breakpoint
     UE_LOG(QuestLog, Log, TEXT("playprogscene_implementation called"))
     if (!IsValid(PrevObjective.CompletionScene)) {
         //do we want to do anything if the scene isn't set? 
@@ -155,8 +210,14 @@ void URDQuestManagerSubsystem::PlayProgressionScene_Implementation(FRDQuestObjec
         
         //Cast< ARD_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->StartDialogueScene(PrevObjective.CompletionScene, TEXT("congrats"));
         //return;
+        UE_LOG(QuestLog, Log, TEXT("wasNotValid"))
+
     }
-    Cast< ARD_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->BeginDialogueScene(PrevObjective.CompletionScene, FText());
+    //UE_LOG(QuestLog, Log, TEXT("prevobj is %s, cpl scene is %s"), * PrevObjective.ObjectiveTitle.ToString(), *PrevObjective.CompletionScene->GetName())
+
+    Cast< ARD_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->BeginDialogueScene(PrevObjective.CompletionScene);
+
+
 
     FText Intro;
     if (PrevObjective.PlayDefaultProgressionScene) {
@@ -165,25 +226,32 @@ void URDQuestManagerSubsystem::PlayProgressionScene_Implementation(FRDQuestObjec
             UE_LOG(QuestLog, Error, TEXT("default progression scene isn't valid"))
                 return;
         }
+        UDA_RDDialogueScene* CopiedDefault = DuplicateObject<UDA_RDDialogueScene>(PrevObjective.DefaultProgressionScene, GetTransientPackage());
 
         UE_LOG(QuestLog, Log, TEXT("2"))
             if (Completed) {
-            Intro = FText::Format(FText::FromString(
-                TEXT("You completed the {0} quest. congrats!")), Quest->QuestTitle);
-        UE_LOG(QuestLog, Log, TEXT("3"))
-        }
+                Intro = FText::Format(FText::FromString(
+                    TEXT("You completed the {0} quest. congrats!")), Quest->QuestTitle);
+                UE_LOG(QuestLog, Log, TEXT("3"))
+            }
             else {
-            Intro = FText::Format(FText::FromString(
-                TEXT("You completed the {0} step of the {1} quest. your next objective is to {2}.")),
-                PrevObjective.ObjectiveTitle,
-                Quest->QuestTitle,
-                Quest->GetCurrentQuestObjective().ObjectiveTitle
+                Intro = FText::Format(FText::FromString(
+                    TEXT("You completed the {0} step of the {1} quest. your next objective is to {2}.")),
+                    PrevObjective.ObjectiveTitle,
+                    Quest->QuestTitle,
+                    Quest->GetCurrentQuestObjective().ObjectiveTitle
             );
 
             UE_LOG(QuestLog, Log, TEXT("4"))
             }
 
-        Cast< ARD_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->BeginDialogueScene(PrevObjective.DefaultProgressionScene, Intro);
+        CopiedDefault->Slides[0].DialogueMainBody = Intro;
+
+        //DefaultProgressionsc
+        UE_LOG(QuestLog, Log, TEXT("prevobj is &s, scene is"))
+
+
+        Cast< ARD_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->BeginDialogueScene(CopiedDefault);
 
     }
 
