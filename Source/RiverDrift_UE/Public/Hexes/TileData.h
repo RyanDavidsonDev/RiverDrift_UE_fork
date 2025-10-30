@@ -112,7 +112,15 @@ uint32 GetTypeHash(const FLandmarkKey& Thing);
 #else // optimize by inlining in shipping and development builds
 FORCEINLINE uint32 GetTypeHash(const FLandmarkKey& Thing)
 {
-	uint32 Hash = FCrc::MemCrc32(&Thing, sizeof(FLandmarkKey));
+	uint32 Hash = 0;
+
+	TArray<ETileType> SortedKey = Thing.Key;
+	SortedKey.Sort();
+
+	for (ETileType Tile : SortedKey) {
+		Hash = HashCombine(Hash, ::GetTypeHash(static_cast<uint8>(Tile)));
+	}
+	//uint32 Hash = FCrc::MemCrc32(&Thing, sizeof(FLandmarkKey));
 	return Hash;
 }
 #endif
