@@ -12,6 +12,7 @@
 #include "PaperSprite.h"
 #include "PaperSpriteComponent.h"
 #include "Math/MathFwd.h"
+#include "Misc/NamePermissionList.h"
 //#include ""
 #include "Logging/StructuredLog.h"
 
