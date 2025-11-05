@@ -132,6 +132,8 @@ void ARD_PlayerController::OnSelectTileTriggered()
 	if (HitResult.bBlockingHit) {
 		ASpawnableTile* tile;
 
+		//if it's a tile
+
 		tile = Cast<ASpawnableTile>(HitResult.GetActor());
 		if (IsValid(tile)) {//ensure that the actor we found was correctly cast to a tile - theoretically once I tweak trace channels this shouldn't ever return false, but I always cast on the side of caution
 			//UE_LOGFMT(LogTemp, Log, "we got a hit, pos is {0} channel was {1}", tile->HexCoord.ToString(), ECollisionChannel::ECC_GameTraceChannel2);
@@ -167,7 +169,9 @@ void ARD_PlayerController::OnSelectTileTriggered()
 			}
 		}
 		else {
+			//if it's not a tile
 
+			//..but instead it's a landmark
 			ARDSpawnableLandmark* Landmark;
 			Landmark = Cast<ARDSpawnableLandmark>(HitResult.GetActor());
 			if (IsValid(Landmark)) {
@@ -177,7 +181,7 @@ void ARD_PlayerController::OnSelectTileTriggered()
 				//Landmark->SetIsPotential(false);
 			}
 			else {
-				UE_LOGFMT(LogTemp, Warning, "player tile raycast somehow returned an actor that isn't a tile. something is wrong with your collisions");
+				UE_LOGFMT(LogTemp, Warning, "player tile raycast somehow returned an actor that isn't a tile or a landmark. something is wrong with your collisions");
 			}
 
 

@@ -13,7 +13,7 @@ class ATileManager;
 class ARDPrototypingManager;
 class UDA_RDPrototypeAsset;
 
-DECLARE_MULTICAST_DELEGATE(FOnGameModeInitializedSignature)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameModeInitializedSignature);
 
 UCLASS()
 class RIVERDRIFT_UE_API ARD_GameMode : public AGameModeBase
@@ -32,7 +32,9 @@ public:
 	TObjectPtr<UDA_RDPrototypeAsset> PrototypingAsset;
 
 
-	
+	//void OnGameModeInitialized();
+
+	UPROPERTY(BlueprintAssignable)
 	FOnGameModeInitializedSignature OnGameModeInitializedDelegate;
 	// --- FUNCTIONS ---
 

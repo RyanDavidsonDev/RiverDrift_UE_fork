@@ -32,8 +32,33 @@ ARD_GameMode::ARD_GameMode()
 void ARD_GameMode::BeginPlay()
 {
 	Super::BeginPlay();
-	//PrototypingManagerInstance =  GetWorld()->SpawnActor<ARDPrototypingManager>(PrototypingManagerFormat);
+
+		//UE_LOG(LogTemp, Warning, TEXT("ctf hi"))
+	
 	OnGameModeInitializedDelegate.Broadcast();
+
+	//// Load the package first
+	//UPackage* Package = LoadPackage(nullptr, TEXT("/Script/RiverDrift_UE"), LOAD_None);
+	//if (!Package)
+	//{
+	//	UE_LOG(LogTemp, Error, TEXT("Failed to load /Script/RiverDrift_UE package!"));
+	//	return;
+	//}
+
+	//// Now force the struct to be registered
+	//(void)FDialogueQuestLookup::StaticStruct();
+
+	//// Test
+	//if (const UScriptStruct* Struct = FindObject<UScriptStruct>(ANY_PACKAGE, TEXT("FDialogueQuestLookup")))
+	//{
+	//	UE_LOG(LogTemp, Warning, TEXT("ctf Found struct: %s"), *Struct->GetName());
+	//}
+	//else
+	//{
+	//	UE_LOG(LogTemp, Error, TEXT("ctf Struct still not found!"));
+	//}
+
+	//PrototypingManagerInstance =  GetWorld()->SpawnActor<ARDPrototypingManager>(PrototypingManagerFormat);
 }
 
 

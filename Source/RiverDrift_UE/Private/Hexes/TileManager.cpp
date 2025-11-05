@@ -60,7 +60,7 @@ void ATileManager::BeginPlay()
 	GameMode = Cast<ARD_GameMode>(GetWorld()->GetAuthGameMode());
 	GameMode->TileManager = this;
 
-	GameMode->OnGameModeInitializedDelegate.AddUObject(this, &ATileManager::SetTileWeights);
+	GameMode->OnGameModeInitializedDelegate.AddUniqueDynamic(this, &ATileManager::SetTileWeights);
 
 
 	TArray<ETileType> test = { ETileType::TE_River, ETileType::TE_Mountain, ETileType::TE_Mountain };
@@ -324,6 +324,7 @@ void ATileManager::BuildGrid_Implementation()
 
 FTileData ATileManager::SelectRandomTileType_Implementation(/*bool& valid*/)
 {
+	UE_LOGFMT(LogTemp, Log, "randizing");
 
 
 	FTileData foundTile;
@@ -386,6 +387,8 @@ void ATileManager::Tick(float DeltaTime)
 
 FTileData ATileManager::GetNextTileToPlace(bool generateNew)
 {
+	UE_LOGFMT(LogTemp, Log, "genning next tile");
+
 	FTileData lastTile = NextTileToPlace;
 	if (generateNew) {
 		NextTileToPlace = SelectRandomTileType();
@@ -409,6 +412,7 @@ void ATileManager::UpgradeTile(FTileData format , ASpawnableTile* tile)
 	PlaceNeighbors(tile);
 
 
+	UE_LOGFMT(LogTemp, Log, "upgrading tile");
 
 	TArray<ARDSpawnableLandmark*> PotentialLandmarks = SpawnPotentialLandmarks(tile) ;
 	
