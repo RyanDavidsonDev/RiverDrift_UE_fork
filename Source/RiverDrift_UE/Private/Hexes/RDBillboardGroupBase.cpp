@@ -17,7 +17,8 @@ ARDBillboardGroupBase::ARDBillboardGroupBase()
 
 	this->SetRootComponent(this->CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent")));
 	ReferenceTile = this->CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("PaperSpriteComponent"));
-	ReferenceTile->AttachToComponent(this->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
+	ReferenceTile->SetupAttachment(this->GetRootComponent());
+	//ReferenceTile->AttachToComponent(this->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 
 	TArray<UPaperSpriteComponent*> paperSprites;
 	//GetComponents**<UPaperSpriteComponent>** (paperSprites);

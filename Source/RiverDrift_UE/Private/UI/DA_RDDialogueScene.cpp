@@ -45,7 +45,8 @@ void UDA_RDDialogueScene::PostInitProperties()
 
 	if (!HasAnyFlags(RF_ClassDefaultObject)) // avoid running for CDO
 	{
-		RegisterDataTable();
+		//CTD CTODO: fix this up so that it automatically updates the data table in editor but not on package
+		//RegisterDataTable();
 	}
 }
 #endif
@@ -63,6 +64,8 @@ void UDA_RDDialogueScene::RegisterDataTable()
 		UE_LOG(LogTemp, Warning, TEXT("Failed to load data table at %s"), *TablePath);
 		return;
 	}
+
+	//URDQuestManagerSubsystem::
 
 	const FName RowName = FName(*GetName());
 	//FDialogueQuestLookup* ExistingRow = DataTable->FindRow<FDialogueQuestLookup>(RowName, TEXT("RegisterDataTable()"));

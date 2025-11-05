@@ -98,7 +98,8 @@ ASpawnableTile::ASpawnableTile()
 
 	this->SetRootComponent(this->CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent")));
 	BackgroundSpriteComponent = this->CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("BackgroundPaperSpriteComponent"));
-	BackgroundSpriteComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+	BackgroundSpriteComponent->SetupAttachment(this->GetRootComponent());
+	//BackgroundSpriteComponent->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
 	
 	//SpriteComponent->SetCollisionObjectType(ECollisionChannel::ECC_GameTraceChannel2);
 	BackgroundSpriteComponent->SetCollisionResponseToChannel(ECollisionChannel::ECC_GameTraceChannel1, ECollisionResponse::ECR_Block);

@@ -6,11 +6,13 @@
 #include "DataTableUtils.h"
 #include "Subsystems/WorldSubsystem.h"
 //#include "Enumerators/QuestEnums.h"
+
 #include "Quests/RDQuestline.h"
 #include "Misc/Guid.h"
 #include "RDQuestManagerSubsystem.generated.h"
 
 //class URDQuestLine;
+class UDA_RDDialogueScene;
 
 UCLASS(Blueprintable)
 class RIVERDRIFT_UE_API URDQuestManagerSubsystem : public UWorldSubsystem
@@ -24,6 +26,7 @@ public:
 
     TMap<FGuid, TObjectPtr<URDQuestLine>> ActiveQuestLines;
     
+    //TArray< UDA_RDDialogueScene> DialogueScenes;
 
 protected:
 
@@ -50,6 +53,8 @@ public:
     void CheckProgression(EConditionType ConditionType, FGuid ObjectiveObjectID);
     //UFUNCTION(BlueprintGetter)
     
+
+
     //TMap < EConditionType, TMap<FName, TObjectPtr<URDQuestLine>>> GetActiveConditions() { return ActiveConditions; };
     
 protected:

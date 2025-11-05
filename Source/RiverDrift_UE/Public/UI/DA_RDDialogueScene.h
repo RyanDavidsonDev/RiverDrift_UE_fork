@@ -74,6 +74,9 @@ public:
 	UFUNCTION(BlueprintCallable)
 	void CloseDialogueScene();
 
+	//UFUNCTION(BlueprintNativeEvent)
+	//void AddToDialogueSceneArray()
+
 	
 	TObjectPtr<FDialogueQuestLookup> QuestLookupRow;
 

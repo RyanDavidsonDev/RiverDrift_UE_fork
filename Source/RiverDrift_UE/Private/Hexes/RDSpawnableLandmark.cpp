@@ -15,7 +15,8 @@ ARDSpawnableLandmark::ARDSpawnableLandmark()
 
 	this->SetRootComponent(this->CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent")));
 	Sprite = this->CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("BackgroundPaperSpriteComponent"));
-	Sprite->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
+	Sprite->SetupAttachment(this->GetRootComponent());
+	//Sprite->AttachToComponent(RootComponent, FAttachmentTransformRules::KeepWorldTransform);
 }
 
 void ARDSpawnableLandmark::InitializeLandmark(TArray<ASpawnableTile*> _ComposingTiles, FLandmarkData _LandmarkData, bool _bIsPotential)
