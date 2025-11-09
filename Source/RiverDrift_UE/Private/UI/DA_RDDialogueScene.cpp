@@ -53,7 +53,7 @@ void UDA_RDDialogueScene::PostInitProperties()
 void UDA_RDDialogueScene::PostLoad()
 {
 	Super::PostLoad();
-	RegisterDataTable();
+	//RegisterDataTable();
 }
 
 void UDA_RDDialogueScene::RegisterDataTable()
@@ -67,7 +67,7 @@ void UDA_RDDialogueScene::RegisterDataTable()
 
 	//URDQuestManagerSubsystem::
 
-	const FName RowName = FName(*GetName());
+	const FName RowName = FName(*InternalName);
 	//FDialogueQuestLookup* ExistingRow = DataTable->FindRow<FDialogueQuestLookup>(RowName, TEXT("RegisterDataTable()"));
 	if (FDialogueQuestLookup* ExistingRow = DataTable->FindRow<FDialogueQuestLookup>(RowName, TEXT("RegisterDataTable()"))) {
 		QuestLookupRow = ExistingRow;
@@ -75,6 +75,9 @@ void UDA_RDDialogueScene::RegisterDataTable()
 		UE_LOG(LogTemp, Log, TEXT("row already exists %s"), *RowName.ToString());
 		return ;
 	}
+	UE_LOG(LogTemp, Error, TEXT("ERROR: dialogue scene was not able to find a corresponding row, scene's object name is %s"), *InternalName );
+
+#if WITH_EDITOR
 	FDialogueQuestLookup NewRow;
 	NewRow.DialogueScene = this;
 	QuestLookupRow = NewRow;
@@ -87,10 +90,9 @@ void UDA_RDDialogueScene::RegisterDataTable()
 	//QuestLookupRow = NewRow;
 
 	DataTable->AddRow(RowName, *QuestLookupRow);
-	UE_LOG(LogTemp, Log, TEXT("Registered asset '%s' in data table '%s'"), *GetName(), *TablePath);
+	UE_LOG(LogTemp, Log, TEXT("Registered asset '%s' in data table '%s'"), *InternalName, *TablePath);
 
 	
-#if WITH_EDITOR
 		DataTable->Modify();
 	DataTable->MarkPackageDirty();
 #endif
@@ -99,28 +101,34 @@ void UDA_RDDialogueScene::RegisterDataTable()
 
 void UDA_RDDialogueScene::CloseDialogueScene()
 {
-	UE_LOG(LogTemp, Log, TEXT("Dialogue scene finished"))
+
+	//URDQuestManagerSubsystem
+
+	//QuestLookupRow->
+	//
+
+	//UE_LOG(LogTemp, Log, TEXT("Dialogue scene finished"))
 
 
-	UDataTable* DataTable = LoadObject<UDataTable>(this, *TablePath);
+	//UDataTable* DataTable = LoadObject<UDataTable>(this, *TablePath);
 
-	if (!DataTable) {
-		UE_LOG(LogTemp, Error, TEXT("Failed to load data table at %s"), *TablePath);
-		return;
-	}
+	//if (!DataTable) {
+	//	UE_LOG(LogTemp, Error, TEXT("Failed to load data table at %s"), *TablePath);
+	//	return;
+	//}
 
-	const FName RowName = FName(*GetName());
-	FDialogueQuestLookup* Row = DataTable->FindRow<FDialogueQuestLookup>(RowName, TEXT("RegisterDataTable()"));
-	//QuestLookupRow = Row;
-	if (Row) {
+	//const FName RowName = FName(*GetName());
+	//FDialogueQuestLookup* Row = DataTable->FindRow<FDialogueQuestLookup>(RowName, TEXT("CloseDataTable()"));
+	////QuestLookupRow = Row;
+	//if (Row) {
 
-		UE_LOG(LogTemp, Log, TEXT("row already exists %s"), *RowName.ToString());
-		//return;
-	}
-	else {
+	//	UE_LOG(LogTemp, Log, TEXT("row already exists %s"), *RowName.ToString());
+	//	//return;
+	//}
+	//else {
 
-		UE_LOG(LogTemp, Log, TEXT("row DOESN'T already exist "));
-	}
+	//	UE_LOG(LogTemp, Log, TEXT("row DOESN'T already exist "));
+	//}
 
 	////FDialogueQuestLookup NewRow;
 	//NewRow->DialogueScene = this;
@@ -136,14 +144,23 @@ void UDA_RDDialogueScene::CloseDialogueScene()
 
 	//	RegisterDataTable();
 	//}
-	if(!Row || !Row->QuestID.IsValid()) {
-		UE_LOG(LogTemp, Error, TEXT("quest lookup STILL not valid, exiting"))
+	//if(!Row || !Row->QuestID.IsValid()) {
+	//	UE_LOG(LogTemp, Error, TEXT("quest lookup STILL not valid, exiting"))
+	//		return;
+	//		//RegisterDataTable();
+	//}
+
+	if (QuestLookupRow == nullptr) {
+		UE_LOG(LogTemp, Error, TEXT("ERROR: quest lookup row not valid"))
 			return;
-			//RegisterDataTable();
+
+	}
+	else {
+		GetWorld()->GetSubsystem<URDQuestManagerSubsystem>()->CheckProgression(
+			EConditionType::CE_Dialogue, QuestLookupRow->QuestID);
+
 	}
 
-	GetWorld()->GetSubsystem<URDQuestManagerSubsystem>()->CheckProgression(
-		EConditionType::CE_Dialogue, Row->QuestID);
 
 }
 

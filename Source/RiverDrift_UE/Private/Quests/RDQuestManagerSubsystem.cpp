@@ -210,7 +210,7 @@ void URDQuestManagerSubsystem::PlayProgressionScene_Implementation(FRDQuestObjec
         
         //Cast< ARD_PlayerController>(UGameplayStatics::GetPlayerController(GetWorld(), 0))->StartDialogueScene(PrevObjective.CompletionScene, TEXT("congrats"));
         //return;
-        UE_LOG(QuestLog, Log, TEXT("wasNotValid"))
+        UE_LOG(QuestLog, Log, TEXT("progression scene wasNotValid"))
 
     }
     //UE_LOG(QuestLog, Log, TEXT("prevobj is %s, cpl scene is %s"), * PrevObjective.ObjectiveTitle.ToString(), *PrevObjective.CompletionScene->GetName())

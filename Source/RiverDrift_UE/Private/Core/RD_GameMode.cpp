@@ -33,7 +33,29 @@ void ARD_GameMode::BeginPlay()
 {
 	Super::BeginPlay();
 
-		//UE_LOG(LogTemp, Warning, TEXT("ctf hi"))
+		//UE_LOG(LogTemp, Warning, TEXT("ctf hi"))\
+
+
+	//UDataTable* DataTable = LoadObject<UDataTable>(nullptr, *TablePath);
+
+	//if (!DataTable) {
+	//	UE_LOG(LogTemp, Error, TEXT("Failed to load data table at %s"), *TablePath);
+	//	return;
+	//}
+
+	////URDQuestManagerSubsystem::
+
+	//TArray<FDialogueQuestLookup*> Rows;
+
+	//DataTable->GetAllRows<FDialogueQuestLookup>(TEXT("LoadingInGameMode"), Rows);
+
+	//for (FDialogueQuestLookup* Row : Rows) {
+	//	QuestLookupMap.Add(Row->QuestID, Row);
+	//}
+
+	////for(FName RowName :
+	
+	
 	
 	OnGameModeInitializedDelegate.Broadcast();
 

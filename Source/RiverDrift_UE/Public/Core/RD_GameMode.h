@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Quests/QuestLookup.h"
 #include "RD_GameMode.generated.h"
+
+//static const FString TablePath = TEXT("/Game/Data/cutscenes/DT_DialogueQuestLookup.DT_DialogueQuestLookup");
 
 /**
  * 
@@ -31,6 +34,7 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UDA_RDPrototypeAsset> PrototypingAsset;
 
+	TMap<FGuid, TObjectPtr<FDialogueQuestLookup>> QuestLookupMap;
 
 	//void OnGameModeInitialized();
 

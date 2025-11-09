@@ -80,6 +80,9 @@ public:
 	
 	TObjectPtr<FDialogueQuestLookup> QuestLookupRow;
 
+	UPROPERTY(EditDefaultsOnly, BlueprintReadonly)
+	FString InternalName;
+
 
 	UPROPERTY(VisibleAnywhere,BlueprintReadonly)
 	UDataTable* QuestLookupDataTable;
