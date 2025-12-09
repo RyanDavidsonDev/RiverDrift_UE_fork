@@ -5,8 +5,9 @@
 #include "Player/RD_PlayerPawn.h"
 #include "Core/DA_RDPrototypeAsset.h"
 #include "Core/RD_GameMode.h"
-#include "Hexes/AA_SpawnableTile.h"
+#include "Hexes/SpawnableTile.h"
 #include "Hexes/TileManager.h"
+#include "Hexes/RDSpawnableLandmark.h"
 #include "HexLibrary.h"
 #include "Logging/StructuredLog.h"
 #include "EnhancedInputComponent.h"
@@ -25,10 +26,10 @@ ARD_PlayerController::ARD_PlayerController()
 
 void ARD_PlayerController::BeginOverlapCallback(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
-	UE_LOGFMT(LogTemp, Log, "begining overlap callback");
+	//UE_LOGFMT(LogTemp, Log, "begining overlap callback");
 	ASpawnableTile* tile = Cast<ASpawnableTile>(OtherActor);
 	if (IsValid(tile)) {
-		UE_LOGFMT(LogTemp, Log, "overlap is a tile");
+		//UE_LOGFMT(LogTemp, Log, "overlap is a tile");
 		TilesInRange.Add(tile);
 
 	}
@@ -36,11 +37,11 @@ void ARD_PlayerController::BeginOverlapCallback(UPrimitiveComponent* OverlappedC
 
 void ARD_PlayerController::EndOverlapCallback(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex)
 {
-	UE_LOGFMT(LogTemp, Log, "ending overlap callback");
+	//UE_LOGFMT(LogTemp, Log, "ending overlap callback");
 
 	ASpawnableTile* tile = Cast<ASpawnableTile>(OtherActor);
 	if (IsValid(tile)) {
-		UE_LOGFMT(LogTemp, Log, " end overlap is a tile, removing from array");
+		//UE_LOGFMT(LogTemp, Log, " end overlap is a tile, removing from array");
 		TilesInRange.Remove(tile);
 
 	}
@@ -55,16 +56,16 @@ void ARD_PlayerController::BeginPlay()
 	GameMode = Cast<ARD_GameMode>(GetWorld()->GetAuthGameMode());
 	//TileManager = GameMode->TileManager;
 	if (IsValid(GameMode)) {
-		UE_LOGFMT(LogTemp, Log, "gamemode is properly set");
+		//UE_LOGFMT(LogTemp, Log, "gamemode is properly set");
 	}
 	else {
-		UE_LOGFMT(LogTemp, Warning, "gamemode is properly INVALID");
+		UE_LOGFMT(LogTemp, Error, "gamemode is INVALID");
 
 	}
 	APawn* pawn = GetPawn();
 	RDPlayerPawn = Cast<ARD_PlayerPawn>(pawn);
 	if (!IsValid(RDPlayerPawn)) {
-		UE_LOG(LogTemp, Warning, TEXT("Player Pawn not set!!!"))
+		UE_LOG(LogTemp, Error, TEXT("Player Pawn not set!!!"))
 	}
 
 
@@ -121,7 +122,7 @@ void ARD_PlayerController::OnInputStarted()
 void ARD_PlayerController::OnSelectTileTriggered()
 {
 
-	UE_LOGFMT(LogTemp, Log, "Player input detected");
+	//UE_LOGFMT(LogTemp, Log, "Player input detected");
 
 	//raytracing method, works but feels needlessly expensive
 	ETraceTypeQuery traceChannel = UEngineTypes::ConvertToTraceType(ECollisionChannel::ECC_GameTraceChannel1);
@@ -131,12 +132,14 @@ void ARD_PlayerController::OnSelectTileTriggered()
 	if (HitResult.bBlockingHit) {
 		ASpawnableTile* tile;
 
+		//if it's a tile
+
 		tile = Cast<ASpawnableTile>(HitResult.GetActor());
 		if (IsValid(tile)) {//ensure that the actor we found was correctly cast to a tile - theoretically once I tweak trace channels this shouldn't ever return false, but I always cast on the side of caution
-			UE_LOGFMT(LogTemp, Log, "we got a hit, pos is {0} channel was {1}", tile->HexCoord.ToString(), ECollisionChannel::ECC_GameTraceChannel2);
+			//UE_LOGFMT(LogTemp, Log, "we got a hit, pos is {0} channel was {1}", tile->HexCoord.ToString(), ECollisionChannel::ECC_GameTraceChannel2);
 
 			if (!CheckIfTileInRange(tile)) {
-				UE_LOGFMT(LogTemp, Log, "player tried selecting a tile that they're not in range for. exiting");
+				//UE_LOGFMT(LogTemp, Log, "player tried selecting a tile that they're not in range for. exiting");
 				return;
 			}
 
@@ -147,30 +150,45 @@ void ARD_PlayerController::OnSelectTileTriggered()
 
 
 				if (CurrentSelectedTile == tile) {
-					UE_LOGFMT(LogTemp, Log, "player has clicked current tile twice over. activating that tile");
+					//UE_LOGFMT(LogTemp, Log, "player has clicked current tile twice over. activating that tile");
 					
 					ActivateTile();
 				}
 				else {
-					UE_LOGFMT(LogTemp, Log, "player has clicked a tile other than the currently selected tile. selecting that tile");
+					//UE_LOGFMT(LogTemp, Log, "player has clicked a tile other than the currently selected tile. selecting that tile");
 					CurrentSelectedTile->DeselectTile();
 					CurrentSelectedTile = tile;
 					tile->SelectTile();
 				}
 			}
 			else {
-				UE_LOGFMT(LogTemp, Log, "player has clicked a new tile for the very first time. selecting that tile");
+				//UE_LOGFMT(LogTemp, Log, "player has clicked a new tile for the very first time. selecting that tile");
 				CurrentSelectedTile = tile;
 				tile->SelectTile();
 
 			}
 		}
 		else {
-			UE_LOGFMT(LogTemp, Warning, "player tile raycast somehow returned an actor that isn't a tile. something is wrong with your collisions");
+			//if it's not a tile
+
+			//..but instead it's a landmark
+			ARDSpawnableLandmark* Landmark;
+			Landmark = Cast<ARDSpawnableLandmark>(HitResult.GetActor());
+			if (IsValid(Landmark)) {
+				Landmark->Interact();
+
+
+				//Landmark->SetIsPotential(false);
+			}
+			else {
+				UE_LOGFMT(LogTemp, Warning, "player tile raycast somehow returned an actor that isn't a tile or a landmark. something is wrong with your collisions");
+			}
+
+
 		}
 	}
 	else {
-		UE_LOGFMT(LogTemp, Log, "player has clicked into the void or somehow hit something that wasn't a tile. should we unset the currently selected tile?");
+		UE_LOGFMT(LogTemp, Warning, "player has clicked into the void or somehow hit something that wasn't a tile. should we unset the currently selected tile?");
 
 	}
 }
@@ -231,7 +249,7 @@ void ARD_PlayerController::ActivateTile()
 
 			FName name = UEnum::GetValueAsName(ETileType::TE_River);
 
-			UE_LOGFMT(LogTemp, Log, "looking up tile type, name is {0}", name);
+			//UE_LOGFMT(LogTemp, Log, "looking up tile type, name is {0}", name);
 			format = GameMode->TileManager->LookupTileType(ETileType::TE_River, TEXT("activate tile with river override active"));
 			//GameMode->TileManager->UpgradeTile()
 		}
@@ -243,11 +261,11 @@ void ARD_PlayerController::ActivateTile()
 
 
 		//CurrentSelectedTile->UpgradeTile(format);
-		UE_LOGFMT(LogTemp, Log, "player activated blank tile, time to upgrade it");
+		//UE_LOGFMT(LogTemp, Log, "player activated blank tile, time to upgrade it");
 		break;
 	case(ETileType::TE_River):
 		//need to implement boat movement :)
-		UE_LOGFMT(LogTemp, Log, "player activated River tile, move to tile");
+		//UE_LOGFMT(LogTemp, Log, "player activated River tile, move to tile");
 		RDPlayerPawn->MoveToTile(CurrentSelectedTile);
 		break;
 	default:

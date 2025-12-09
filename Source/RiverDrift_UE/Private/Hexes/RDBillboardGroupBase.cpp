@@ -17,7 +17,8 @@ ARDBillboardGroupBase::ARDBillboardGroupBase()
 
 	this->SetRootComponent(this->CreateDefaultSubobject<USceneComponent>(TEXT("RootComponent")));
 	ReferenceTile = this->CreateDefaultSubobject<UPaperSpriteComponent>(TEXT("PaperSpriteComponent"));
-	ReferenceTile->AttachToComponent(this->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
+	ReferenceTile->SetupAttachment(this->GetRootComponent());
+	//ReferenceTile->AttachToComponent(this->GetRootComponent(), FAttachmentTransformRules::KeepWorldTransform);
 
 	TArray<UPaperSpriteComponent*> paperSprites;
 	//GetComponents**<UPaperSpriteComponent>** (paperSprites);
@@ -77,7 +78,7 @@ void ARDBillboardGroupBase::Tick(float DeltaTime)
 		FRotator LookRotation = FRotator(0, lookAtRot.Yaw - GetOwner()->GetActorRotation().Yaw, 0);
 		LookRotation += FRotator(0,-90,0);
 
-		UE_LOGFMT(LogTemp, Log, "look at {0}, look rotation {1}", *lookAtRot.ToCompactString(), *LookRotation.ToCompactString());
+		//UE_LOGFMT(LogTemp, Log, "look at {0}, look rotation {1}", *lookAtRot.ToCompactString(), *LookRotation.ToCompactString());
 		//SetWorldRotation(lookRotation);
 		billboard->SetRelativeRotation(LookRotation);
 	}

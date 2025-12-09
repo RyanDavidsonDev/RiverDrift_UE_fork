@@ -4,7 +4,10 @@
 
 #include "CoreMinimal.h"
 #include "GameFramework/GameModeBase.h"
+#include "Quests/QuestLookup.h"
 #include "RD_GameMode.generated.h"
+
+//static const FString TablePath = TEXT("/Game/Data/cutscenes/DT_DialogueQuestLookup.DT_DialogueQuestLookup");
 
 /**
  * 
@@ -13,7 +16,7 @@ class ATileManager;
 class ARDPrototypingManager;
 class UDA_RDPrototypeAsset;
 
-DECLARE_MULTICAST_DELEGATE(FOnGameModeInitializedSignature)
+DECLARE_DYNAMIC_MULTICAST_DELEGATE(FOnGameModeInitializedSignature);
 
 UCLASS()
 class RIVERDRIFT_UE_API ARD_GameMode : public AGameModeBase
@@ -31,8 +34,11 @@ public:
 	UPROPERTY(BlueprintReadWrite)
 	TObjectPtr<UDA_RDPrototypeAsset> PrototypingAsset;
 
+	TMap<FGuid, TObjectPtr<FDialogueQuestLookup>> QuestLookupMap;
 
-	
+	//void OnGameModeInitialized();
+
+	UPROPERTY(BlueprintAssignable)
 	FOnGameModeInitializedSignature OnGameModeInitializedDelegate;
 	// --- FUNCTIONS ---
 

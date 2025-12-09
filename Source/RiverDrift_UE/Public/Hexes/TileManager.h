@@ -5,16 +5,19 @@
 #include "CoreMinimal.h"
 #include "GameFramework/Actor.h"
 #include "../HexLibrary.h"
-#include "../Hexes/AA_SpawnableTile.h"
+#include "../Hexes/SpawnableTile.h"
 #include "TileManager.generated.h"
 
 
 class ASpawnableTile;
 struct FHex;
 struct FOffsetCoord;
-enum TileType;
+struct FLandmarkKey;
+//enum TileType;
 class ARD_GameMode;
-//struct FTileData;
+struct FLandmarkData;
+struct FTableRowBase;
+struct FTileData;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FOnTileGeneratedSignature, FTileData, NextTile);
 
@@ -30,7 +33,17 @@ public:
 	UPROPERTY(EditDefaultsOnly)
 	TObjectPtr<UDataTable> TileDataTable;
 
+
+	UPROPERTY(EditDefaultsOnly)
+	TObjectPtr<UDataTable> LandmarkDataTable;
+
+	UPROPERTY(VisibleAnywhere)
+	//TMap<FLandmarkKey, FLandmarkData > LandmarkHashMap;    
+	TMap<FLandmarkKey, FName> LandmarkHashMap;
+
+
 	static ASpawnableTile* dummy_tile;
+
 
 	UPROPERTY(BlueprintAssignable)
 	FOnTileGeneratedSignature D_OnTileGeneratedDelegate;
@@ -38,7 +51,7 @@ public:
 
 protected:
 	UPROPERTY(VisibleInstanceOnly)
-	FTileData NextTileToPlace; //needs to be a pointer as c++ can't tell how to allocate its size
+	FTileData NextTileToPlace; 
 
 	UPROPERTY(BlueprintReadWrite, VisibleAnywhere)
 	TMap<FVector3f, ASpawnableTile* > RD_TileMap; //I think this is actually unneeded?
@@ -47,12 +60,15 @@ protected:
 	UPROPERTY(EditDefaultsOnly)
 	TSubclassOf<ASpawnableTile> DefaultSpawnableTileBP;
 
+	UPROPERTY(EditDefaultsOnly)
+	TSubclassOf<ARDSpawnableLandmark> DefaultSpawnableLandmarkBP;
 
 	int fTotalRowsWeight;
 
 private:
 	TObjectPtr<ARD_GameMode> GameMode;
 	
+
 	// --  FUNCS ---
 
 
@@ -84,6 +100,9 @@ public:
 	UFUNCTION()
 	void SetTileWeights();
 
+	UFUNCTION()
+	void InitializeLandmarkMap();
+
 protected:
 	//variables
 	
@@ -106,5 +125,47 @@ protected:
 	ASpawnableTile* CreateBlankTile(FHex hexCoord);
 
 	void PlaceNeighbors(ASpawnableTile* tile);
+	
+	static FString LandmarkKeyToString(TArray<ETileType> arr);
 
+	//static FTableRowBase* LookupTableByName(UDataTable* table, FName name, FString& contextMessage);
+	//T* Lookup()shou
+
+
+	template<typename FTableRowChild, typename = std::enable_if_t<std::is_base_of_v<FTableRowBase, FTableRowChild>>>
+	static FTableRowChild* LookupTableByName(UDataTable* Table, FName RowName, const FString& contextMessage)
+	{
+		if (!IsValid(Table)) {
+			UE_LOG(LogTemp, Warning, TEXT("LookupTableByName failed: Table is null. Context: %s"), *contextMessage);
+			return nullptr;
+
+		} 
+
+		FTableRowChild* FoundRow = Table->FindRow<FTableRowChild>(RowName, contextMessage);
+		if (!(FoundRow)) {
+			UE_LOG(LogTemp, Warning, TEXT("LookupTableByName failed: Row '%s' not found in table. Context: %s"), *RowName.ToString(), *contextMessage);
+		} 
+
+		return FoundRow;
+	}
+	ARDSpawnableLandmark* CreatePotentialLandmark(FName name, FLandmarkData data, TArray<ASpawnableTile*> ComposingTiles);
+
+	TArray<ARDSpawnableLandmark*> SpawnPotentialLandmarks(ASpawnableTile* tile);
+
+	//static FTableRowChild* LookupTableByName(UDataTable* Table, FName RowName, const FString& ContextString)
+	//{
+	//	if (!Table)
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("LookupTableByName failed: Table is null. Context: %s"), *ContextString);
+	//		return nullptr;
+	//	}
+
+	//	FTableRowChild* FoundRow = Table->FindRow<FTableRowChild>(RowName, ContextString);
+	//	if (!FoundRow)
+	//	{
+	//		UE_LOG(LogTemp, Warning, TEXT("LookupTableByName failed: Row '%s' not found. Context: %s"), *RowName.ToString(), *ContextString);
+	//	}
+
+	//	return FoundRow;
+	//}
 };

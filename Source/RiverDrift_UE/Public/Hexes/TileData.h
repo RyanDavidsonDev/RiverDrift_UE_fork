@@ -3,6 +3,8 @@
 #include "CoreMinimal.h"
 //#include "../HexLibrary.h"
 #include "RDBillboardGroupBase.h"
+#include "../../RiverDrift_UE.h"
+#include "Quests/QuestLookup.h"
 #include "TileData.generated.h"
 /**
  *
@@ -10,17 +12,19 @@
 
 class UPaperSprite;
 class ARDBillboardGroupBase;
+class UDA_RDDialogueScene;
 
 UENUM(BlueprintType)
 enum class ETileType : uint8
 {
 	TE_Blank UMETA(DisplayName = "Blank"),
+	TE_River UMETA(DisplayName = "river"),
 	TE_Field UMETA(DisplayName = "field"),
 	TE_Forest UMETA(DisplayName = "forest"),
 	TE_Mountain UMETA(DisplayName = "mountain"),
-	TE_River UMETA(DisplayName = "river"),
 	TE_Town UMETA(DisplayName = "town"),
 	TE_Mystery UMETA(DisplayName = "mystery"),
+	TE_Beach UMETA(DisplayName = "beach"),
 };
 
 USTRUCT()
@@ -44,7 +48,6 @@ public:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
 	bool bIsPlayerTraversible;
 
-
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	float cellSize = 256.0f;
 
@@ -54,4 +57,132 @@ public:
 	float cellWidth = cellSize;
 	float cellHeight = cellSize;
 
+
 };
+
+USTRUCT(BlueprintType)
+struct RIVERDRIFT_UE_API FLandmarkKey
+{
+	GENERATED_BODY()
+
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
+	TArray<ETileType> Key;
+
+
+	FLandmarkKey()
+		: FLandmarkKey(TArray<ETileType>{ETileType::TE_Blank, ETileType::TE_Blank, ETileType::TE_Blank})
+	{}
+
+	FLandmarkKey(TArray<ETileType> Key)
+		: Key(Key)
+	{}
+
+	FLandmarkKey(const FLandmarkKey& Other)
+		: FLandmarkKey(Other.Key)
+	{}
+	
+
+	bool operator==(const FLandmarkKey& Other) const
+	{
+		return Equals(Other);
+	}
+
+
+	bool Equals(const FLandmarkKey& Other) const
+	{
+		TArray<ETileType> SortedOther = Other.Key;
+		SortedOther.Sort();
+
+		TArray<ETileType> SortedKey = Key;
+		SortedKey.Sort();
+		for (int i = 0; i < Key.Num(); i++) {
+			if (SortedOther[i] != SortedKey[i]) {
+				return false;
+			}
+		}
+		return true;
+	}
+
+};
+#if UE_BUILD_DEBUG
+uint32 GetTypeHash(const FLandmarkKey& Thing);
+#else // optimize by inlining in shipping and development builds
+FORCEINLINE uint32 GetTypeHash(const FLandmarkKey& Thing)
+{
+	uint32 Hash = 0;
+
+	TArray<ETileType> SortedKey = Thing.Key;
+	SortedKey.Sort();
+
+	for (ETileType Tile : SortedKey) {
+		Hash = HashCombine(Hash, ::GetTypeHash(static_cast<uint8>(Tile)));
+	}
+	//uint32 Hash = FCrc::MemCrc32(&Thing, sizeof(FLandmarkKey));
+	return Hash;
+}
+#endif
+
+
+USTRUCT(BlueprintType)
+struct RIVERDRIFT_UE_API FLandmarkDataIH : public FQuestLookup
+{
+	GENERATED_BODY()
+
+	FLandmarkDataIH() {
+		//UE_LOG(QuestLog, Log, TEXT("constructor called"))
+		QuestID = FGuid::NewGuid();
+	};
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
+	FString Name;
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tiles")
+	//FGuid QuestID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
+	FLandmarkKey Key;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
+	UPaperSprite* Sprite;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
+	UDA_RDDialogueScene* InteractionCutscene;
+
+};
+
+USTRUCT(BlueprintType)
+struct RIVERDRIFT_UE_API FLandmarkData : public FQuestLookup
+{
+	GENERATED_BODY()
+
+	FLandmarkData() {
+		//UE_LOG(QuestLog, Log, TEXT("constructor called"))
+		QuestID = FGuid::NewGuid();
+	};
+
+public:
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
+	FString Name;
+
+	//UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Tiles")
+	//FGuid QuestID;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
+	FLandmarkKey Key;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
+	UPaperSprite* Sprite;
+
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Tiles")
+	UDA_RDDialogueScene* InteractionCutscene;
+
+};
+

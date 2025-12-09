@@ -10,6 +10,8 @@
 DECLARE_LOG_CATEGORY_EXTERN(InitLog, Log, All);
 // declare a log called AILog
 DECLARE_LOG_CATEGORY_EXTERN(AiLog, Log, All);
+DECLARE_LOG_CATEGORY_EXTERN(QuestLog, Log, All);
+
 
 
 

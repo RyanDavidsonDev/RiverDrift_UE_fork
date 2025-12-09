@@ -3,7 +3,7 @@
 
 #include "Player/RD_PlayerPawn.h"
 #include "Player/RD_PlayerController.h"
-#include "Hexes/AA_SpawnableTile.h"
+#include "Hexes/SpawnableTile.h"
 #include "Hexes/TileManager.h"
 #include "Core/RD_GameMode.h"
 #include "UObject/ConstructorHelpers.h"

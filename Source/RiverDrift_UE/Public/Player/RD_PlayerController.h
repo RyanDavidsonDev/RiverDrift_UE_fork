@@ -6,6 +6,7 @@
 #include "Templates/SubclassOf.h"
 #include "GameFramework/PlayerController.h"
 #include "../HexLibrary.h"
+#include "Internationalization/Text.h"
 #include "RD_PlayerController.generated.h"
 
 class UNiagaraSystem;
@@ -15,6 +16,9 @@ class ASpawnableTile;
 class ATileManager;
 class ARD_GameMode;
 class ARD_PlayerPawn;
+class URDQuestLine;
+class UDA_RDDialogueScene;
+struct FRDQuestObjective;
 
 /**
  * 
@@ -81,6 +85,8 @@ public:
 	UFUNCTION()
 	void EndOverlapCallback(UPrimitiveComponent* OverlappedComp, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex);
 
+	UFUNCTION(BlueprintImplementableEvent)
+	void BeginDialogueScene(UDA_RDDialogueScene* DialogueScene);
 
 protected:
 	/** True if the controlled character should navigate to the mouse cursor. */
